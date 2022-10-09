@@ -31,7 +31,6 @@ USER_DEFINED_APPS = [
 ]
 
 DJANGO_APPS = [
-    'users.apps.UsersConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
