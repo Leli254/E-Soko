@@ -1,15 +1,22 @@
-import os
 from pathlib import Path
+import os
+
+import environ
+
+# Initialise environment variables
+env = environ.Env()
+
+environ.Env.read_env()
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-f-ilyw0ckj9y=xpi_xr_6u82@t-lxo786#fq#ertgwb2oi^-8*'
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -19,7 +26,12 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
-INSTALLED_APPS = [
+USER_DEFINED_APPS = [
+    'users.apps.UsersConfig',
+]
+
+DJANGO_APPS = [
+    'users.apps.UsersConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -27,6 +39,51 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
+
+THIRD_PARTY_APPS=[
+    #allauth apps
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    #allauth providers
+    'allauth.socialaccount.providers.google',
+
+]
+
+INSTALLED_APPS = USER_DEFINED_APPS + DJANGO_APPS + THIRD_PARTY_APPS
+
+AUTH_USER_MODEL='users.User'
+
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    }
+}
+
+SITE_ID = 1
+
+ACCOUNT_UNIQUE_EMAIL =True
+ACCOUNT_EMAIL_REQUIRED =True
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+ACCOUNT_EMAIL_VERIFICATION = "none"
+
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

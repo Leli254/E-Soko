@@ -20,9 +20,12 @@ class User(AbstractUser):
 
     username = None
     email = models.EmailField(_('email address'), unique=True)
-    is_medic = models.BooleanField(default=False)
     joindate=models.DateField(auto_now_add=True)
     uuid_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    phone_number = models.CharField(max_length=20,unique=True)
+    gender = models.CharField(max_length=10, choices=GENDER_CHOICES,default='Male')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     
 
     USERNAME_FIELD = 'email'
@@ -44,67 +47,23 @@ class User(AbstractUser):
     def fullname(self):
         return f"{self.first_name} {self.last_name}"
     
-    def has_medicprofile(self):
-        return hasattr(self, 'medicprofile')
     
-    def has_profile(self):
-        return hasattr(self, 'profile')
+    def has_address(self):
+        return hasattr(self, 'address')
      
     
-class Profile(models.Model):
+class Address(models.Model):
     user=models.OneToOneField(
         settings.AUTH_USER_MODEL,on_delete=models.CASCADE
         )
-    phone_number=models.CharField(max_length=20)
-    gender = models.CharField(max_length=10, choices=GENDER_CHOICES,default='Male')
-    birthdate = models.DateField(null=True, blank=True)
-    bio = models.TextField(default='', blank=True)
-    avatar = models.ImageField(upload_to='profile_image', null=True, blank=True)
-    slug = models.SlugField(max_length=255, unique=True, null=True, blank=True)
-    uuid_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    full_name=models.CharField(max_length=100)
+    post_code=models.CharField(max_length=100)
+    address_line=models.CharField(max_length=100)
+    address_line2=models.CharField(max_length=100)
+    town_city=models.CharField(max_length=100)
+    delivery_instructions=models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    is_verified = models.BooleanField(default=False)
+    default_address=models.BooleanField(default=False)
     
     
-    def __str__(self):  # __unicode__ for Python 2
-        return self.user.email
-    
-    class Meta:
-        verbose_name = _("User Profile")
-        verbose_name_plural = _("User Profiles")
-        
-        
-    def save(self, *args, **kwargs):
-        slug = slugify(self.user.fullname)
-        random_string = get_random_string(8, allowed_chars='abcdefghijklmnopqrstuvwxyz0123456789')
-        self.slug = slug + "-" + random_string
-        super().save(*args, **kwargs)
-    
-class MedicProfile(models.Model):
-    user=models.OneToOneField(
-        settings.AUTH_USER_MODEL,on_delete=models.CASCADE
-        )
-    phone_number=models.CharField(max_length=20)
-    gender = models.CharField(max_length=10, choices=GENDER_CHOICES,default='Male')
-    birthdate = models.DateField(null=True, blank=True)
-    bio = models.TextField(default='', blank=True)
-    avatar = models.ImageField(upload_to='profile_image', null=True, blank=True)
-    
-    registration_number=models.CharField(max_length=20)
-    cadre=models.CharField(max_length=20)
-    slug = models.SlugField(max_length=255, unique=True, null=True, blank=True)
-    uuid_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    is_verified = models.BooleanField(default=False)
-    
-    
-    def __str__(self):  # __unicode__ for Python 2
-        return self.user.email
-    
-    def save(self, *args, **kwargs):
-        slug = slugify(self.user.fullname)
-        random_string = get_random_string(8, allowed_chars='abcdefghijklmnopqrstuvwxyz0123456789')
-        self.slug = slug + "-" + random_string
-        super().save(*args, **kwargs)
