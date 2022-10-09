@@ -29,6 +29,7 @@ ALLOWED_HOSTS = []
 
 USER_DEFINED_APPS = [
     'users.apps.UsersConfig',
+    'commons.apps.CommonsConfig',
     'shop.apps.ShopConfig',
 ]
 
