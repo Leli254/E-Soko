@@ -33,6 +33,7 @@ USER_DEFINED_APPS = [
     'shop.apps.ShopConfig',
     'cart.apps.CartConfig',
     'orders.apps.OrdersConfig',
+    'payments.apps.PaymentsConfig',
 ]
 
 DJANGO_APPS = [
