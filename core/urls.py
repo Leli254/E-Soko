@@ -17,4 +17,7 @@ urlpatterns = [
     path('',TemplateView.as_view(template_name='home.html'),name='home'),
     path('help/',TemplateView.as_view(template_name='help.html'),name='help'),
     path('contact/',ContactView.as_view(),name='contact'),
+    path('cart/', include('cart.urls',namespace='cart')),
+    path('orders/', include('orders.urls',namespace='orders')),
+    path('payment/', include('payments.urls', namespace='payment')),
 ]
