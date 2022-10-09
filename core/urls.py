@@ -16,5 +16,6 @@ urlpatterns = [
     path('accounts/address/list/', AddressListView.as_view(), name='address_list'),
     path('accounts/address/update/<int:pk>/', AddressUpdateView.as_view(), name='address_update'),
     path('accounts/address/delete/<int:pk>/', AddressDeleteView.as_view(), name='address_delete'),
-    path('',TemplateView.as_view(template_name='shop_base.html'),name='home'),
+    path('',TemplateView.as_view(template_name='home.html'),name='home'),
+    path('help/',TemplateView.as_view(template_name='help.html'),name='help'),
 ]
