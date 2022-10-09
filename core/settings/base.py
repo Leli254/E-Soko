@@ -29,6 +29,7 @@ ALLOWED_HOSTS = []
 
 USER_DEFINED_APPS = [
     'users.apps.UsersConfig',
+    'shop.apps.ShopConfig',
 ]
 
 DJANGO_APPS = [
@@ -47,6 +48,7 @@ THIRD_PARTY_APPS=[
     'allauth.socialaccount',
     #allauth providers
     'allauth.socialaccount.providers.google',
+    'crispy_forms',
 
 ]
 
@@ -181,3 +183,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+CRISPY_TEMPLATE_PACK = 'uni_form'
