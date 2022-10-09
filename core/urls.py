@@ -6,6 +6,7 @@ from django.views.generic import TemplateView
 
 
 from users.views import AddressCreateView
+from commons.views import ContactView
 
 
 urlpatterns = [
@@ -15,4 +16,5 @@ urlpatterns = [
     path('accounts/profile/', AddressCreateView.as_view(), name='profile_create'),
     path('',TemplateView.as_view(template_name='home.html'),name='home'),
     path('help/',TemplateView.as_view(template_name='help.html'),name='help'),
+    path('contact/',ContactView.as_view(),name='contact'),
 ]
