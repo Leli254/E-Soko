@@ -26,3 +26,42 @@ class AddressCreateView(LoginRequiredMixin,CreateView):
         context = super().get_context_data(**kwargs)
         context['addresses'] = Address.objects.filter(user=self.request.user)
         return context
+
+
+
+class AddressListView(LoginRequiredMixin,TemplateView):
+    template_name = 'users/address_list.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['addresses'] = Address.objects.filter(user=self.request.user)
+        return context
+
+
+class AddressUpdateView(LoginRequiredMixin,UpdateView):
+    model = Address
+    form_class = AddressForm
+    template_name = 'users/address_form.html'
+    success_url = reverse_lazy('users:address_list')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['addresses'] = Address.objects.filter(user=self.request.user)
+        return context
+
+
+class AddressDeleteView(LoginRequiredMixin,TemplateView):
+    template_name = 'users/address_confirm_delete.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['address'] = Address.objects.get(pk=self.kwargs['pk'])
+        return context
+    
+    def post(self, request, *args, **kwargs):
+        address = get_object_or_404(Address, pk=self.kwargs['pk'])
+        address.delete()
+        return HttpResponseRedirect(reverse('users:address_list'))
+
+
+
