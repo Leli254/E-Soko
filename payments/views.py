@@ -62,7 +62,7 @@ def lipa_na_mpesa(request):
         "PartyB": LipaNaMpesaPassword.Business_short_code,
         "PhoneNumber":phone_number, 
         "CallBackURL": "https://sandbox.safaricom.co.ke/mpesa/",
-        "AccountReference": "Lyttis",
+        "AccountReference": "Soko",
         "TransactionDesc": "Testing stk push"
     }
 
