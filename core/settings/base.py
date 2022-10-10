@@ -86,7 +86,6 @@ ACCOUNT_EMAIL_REQUIRED =True
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 ACCOUNT_EMAIL_VERIFICATION = "none"
 
 
@@ -192,16 +191,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CRISPY_TEMPLATE_PACK = 'uni_form'
 
 #mpesa credentials
-MPESA_CONSUMER_KEY = env('MPESA_CONSUMER_KEY')
-MPESA_CONSUMER_SECRET = env('MPESA_CONSUMER_SECRET')
-MPESA_API_URL = env('MPESA_API_URL')
-
+MPESA_CONSUMER_KEY = 'yfwi3YfXJBNoXVAMC7NsYYhJzbfuKmMQ'
+MPESA_CONSUMER_SECRET = 'a9FL9sjaBTUYCb4U'
+MPESA_API_URL = 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials'
 #cart settings
 CART_SESSION_ID = 'cart'
 
 
 #Email settings
-#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 
 # Celery settings
