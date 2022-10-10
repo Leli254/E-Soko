@@ -53,3 +53,5 @@ virtualenv/
 # Secrets
 secrets.json
 .vscode/
+/.vscode/
+/.vscode/settings.json
