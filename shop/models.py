@@ -25,8 +25,14 @@ class Vendor(models.Model):
 
 class Category(models.Model):
     name = models.CharField(max_length=200)
+    description=models.TextField(blank=True, null=True, default='')
     slug = models.SlugField(max_length=200,
                             unique=True)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+    parent = models.ForeignKey(
+        'self', blank=True, null=True,
+        on_delete=models.CASCADE, related_name='children')
 
     class Meta:
         ordering = ['name']
