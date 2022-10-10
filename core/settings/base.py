@@ -190,3 +190,21 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 CRISPY_TEMPLATE_PACK = 'uni_form'
+
+#mpesa credentials
+MPESA_CONSUMER_KEY = env('MPESA_CONSUMER_KEY')
+MPESA_CONSUMER_SECRET = env('MPESA_CONSUMER_SECRET')
+MPESA_API_URL = env('MPESA_API_URL')
+
+#cart settings
+CART_SESSION_ID = 'cart'
+
+
+#Email settings
+#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+
+# Celery settings
+CELERY_BROKER_URL = "redis://localhost:6379"
+CELERY_RESULT_BACKEND = "redis://localhost:6379"
+
