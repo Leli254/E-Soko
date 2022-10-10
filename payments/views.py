@@ -8,7 +8,7 @@ from django.conf import settings
 from django.shortcuts import render, redirect,get_object_or_404
 from django.urls import reverse
 
-from . mpesa_credentials import MpesaAccessToken,LipaNaMpesaPassword
+from . mpesa import MpesaAccessToken,LipaNaMpesaPassword
 from orders.models import Order
 from .models import MpesaPayment
 from .forms import MpesaNumberForm
