@@ -191,8 +191,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CRISPY_TEMPLATE_PACK = 'uni_form'
 
 #mpesa credentials
-MPESA_CONSUMER_KEY = 'yfwi3YfXJBNoXVAMC7NsYYhJzbfuKmMQ'
-MPESA_CONSUMER_SECRET = 'a9FL9sjaBTUYCb4U'
+MPESA_CONSUMER_KEY = 'L2IbYvA0RoQM26wxaPDl3dKi5GDcOKPD'
+MPESA_CONSUMER_SECRET = 'lHCgY3MSFvnloQHH'
 MPESA_API_URL = 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials'
 #cart settings
 CART_SESSION_ID = 'cart'
