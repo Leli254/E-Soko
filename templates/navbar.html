@@ -3,9 +3,9 @@
     <div class="row bg-secondary py-2 px-xl-5">
         <div class="col-lg-6 d-none d-lg-block">
             <div class="d-inline-flex align-items-center">
-                <a class="text-dark" href="">FAQs</a>
+                <a class="text-dark" href="{% url 'faqs' %}">FAQs</a>
                 <span class="text-muted px-2">|</span>
-                <a class="text-dark" href="">Help</a>
+                <a class="text-dark" href="{% url 'help' %}">Help</a>
                 <span class="text-muted px-2">|</span>
                 <a class="text-dark" href="">Support</a>
             </div>
@@ -55,7 +55,19 @@
             </a>
             <a href="" class="btn border">
                 <i class="fas fa-shopping-cart text-primary"></i>
-                <span class="badge">0</span>
+                <span class="badge">
+
+            {% with total_items=cart|length %}
+          {% if total_items > 0 %}:
+            <a href="{% url "cart:cart_detail" %}">
+              {{ total_items }} item{{ total_items|pluralize }},
+              KSh {{ cart.get_total_price }}
+            </a>
+          {% elif not order %}
+            Your cart is empty.
+          {% endif %}
+        {% endwith %}
+                </span>
             </a>
         </div>
     </div>

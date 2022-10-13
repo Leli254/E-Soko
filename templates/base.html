@@ -29,9 +29,14 @@
 <body>
   
     {% include "navbar.html" %}
+    <main role="main" class="container">  
+        <div class= "container mt-3">
+          <br>
 
     {% block content %}{% endblock %}
-
+        </div>
+    
+    </main>
 
     {% include "footer.html" %}
 
