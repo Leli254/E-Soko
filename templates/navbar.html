@@ -55,18 +55,14 @@
             </a>
             <a href="" class="btn border">
                 <i class="fas fa-shopping-cart text-primary"></i>
-                <span class="badge">
-
-            {% with total_items=cart|length %}
-          {% if total_items > 0 %}:
-            <a href="{% url "cart:cart_detail" %}">
-              {{ total_items }} item{{ total_items|pluralize }},
-              KSh {{ cart.get_total_price }}
-            </a>
+                <span class="badge" href="{% url 'cart:cart_detail' %}">
+                    {% with total_items=cart|length %}{% if total_items > 0 %}
+              {{ total_items }}
           {% elif not order %}
-            Your cart is empty.
+           0
           {% endif %}
         {% endwith %}
+    </a>
                 </span>
             </a>
         </div>

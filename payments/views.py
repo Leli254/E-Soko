@@ -67,8 +67,7 @@ def lipa_na_mpesa(request):
     }
 
     response = requests.post(api_url, json=request, headers=headers)
-    return HttpResponse('success')
-
+    return  redirect(reverse('payment:register_mpesa_validation', args=[order_id]))
 
 def payment_completed(request):
     return render(request, 'payments/completed.html')
@@ -86,8 +85,8 @@ def register_urls(request):
     headers = {"Authorization": "Bearer %s" % access_token}
     options = {"ShortCode": LipaNaMpesaPassword.Test_c2b_shortcode,
                "ResponseType": "Completed",
-               "ConfirmationURL": "https://6026-154-159-244-38.in.ngrok.io/",
-               "ValidationURL": "https://6026-154-159-244-38.in.ngrok.io/"}
+               "ConfirmationURL": "https://ea17-154-159-244-38.in.ngrok.io",
+               "ValidationURL": "https://ea17-154-159-244-38.in.ngrok.io/"}
     response = requests.post(api_url, json=options, headers=headers)
 
     return HttpResponse(response.text)

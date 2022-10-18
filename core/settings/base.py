@@ -23,7 +23,7 @@ SECRET_KEY = env('SECRET_KEY')
 DEBUG = True
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.ngrok.io']
-CSRF_TRUSTED_ORIGINS=['https://79e3-196-201-231-26.in.ngrok.io']
+CSRF_TRUSTED_ORIGINS=['https://ea17-154-159-244-38.in.ngrok.io']
 
 
 # Application definition

@@ -1,7 +1,9 @@
+import uuid
 from django.db import models
 
 
 class BaseModel(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -43,6 +45,11 @@ class MpesaPayment(BaseModel):
     last_name = models.CharField(max_length=100)
     phone_number = models.TextField()
     organization_balance = models.DecimalField(max_digits=10, decimal_places=2)
+    is_finished = models.BooleanField(default=False)
+    is_successful = models.BooleanField(default=False)
+    trans_id = models.CharField(max_length=30, blank=True, null=True)
+    order_id = models.CharField(max_length=200, blank=True, null=True)
+    checkout_request_id = models.CharField(max_length=100, blank=True, null=True)
 
     class Meta:
         verbose_name = 'Mpesa Payment'
