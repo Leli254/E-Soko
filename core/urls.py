@@ -6,7 +6,7 @@ from django.views.generic import TemplateView
 
 
 from users.views import AddressCreateView
-from commons.views import ContactView
+from commons.views import contact
 
 
 urlpatterns = [
@@ -17,7 +17,7 @@ urlpatterns = [
     path('',TemplateView.as_view(template_name='home.html'),name='home'),
     path('help/',TemplateView.as_view(template_name='help.html'),name='help'),
     path('faqs/',TemplateView.as_view(template_name='faqs.html'),name='faqs'),
-    path('contact/',ContactView.as_view(),name='contact'),
+    path('contact/',contact,name='contact'),
     path('cart/', include('cart.urls',namespace='cart')),
     path('orders/', include('orders.urls',namespace='orders')),
     path('payment/', include('payments.urls', namespace='payment')),
