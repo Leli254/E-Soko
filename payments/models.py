@@ -54,6 +54,10 @@ class MpesaPayment(BaseModel):
     class Meta:
         verbose_name = 'Mpesa Payment'
         verbose_name_plural = 'Mpesa Payments'
+        indexes = [
+            models.Index(fields=['created_at']),
+        ]
 
+        
     def __str__(self):
         return self.first_name
