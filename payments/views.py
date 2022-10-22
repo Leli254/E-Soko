@@ -8,8 +8,11 @@ from requests.auth import HTTPBasicAuth
 from django.conf import settings
 from django.db.transaction import atomic, non_atomic_requests
 from django.http import HttpResponse ,HttpResponseForbidden ,JsonResponse
+from django.views import View
+from django.db import IntegrityError
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
+from django.utils.decorators import method_decorator
 from django.shortcuts import render, redirect,get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
@@ -48,7 +51,8 @@ def get_mpesa_number(request):
 
 
 
-
+@csrf_exempt
+@non_atomic_requests
 def lipa_na_mpesa(request):
     order_id = request.session['order_id']
     order = get_object_or_404(Order, id=order_id)
@@ -57,6 +61,14 @@ def lipa_na_mpesa(request):
     phone_number = request.session['phone_number']
     
     access_token = MpesaAccessToken.validated_mpesa_access_token
+    '''
+    if not compare_digest(access_token, ''): #we compare the access token to an empty string/invalid token
+        return HttpResponseForbidden(
+            'Invalid access token. Please generate a new one and try again.',
+            content_type='text/plain'
+        )
+    '''
+
     api_url = "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest"
     headers = {"Authorization": "Bearer %s" % access_token}
     request = {
@@ -73,8 +85,41 @@ def lipa_na_mpesa(request):
         "TransactionDesc": "Testing stk push"
     }
 
-    response = requests.post(api_url, json=request, headers=headers)
-    return  redirect(reverse('payment:register_mpesa_validation', args=[order_id]))
+    response =requests.post(api_url, json=request, headers=headers)
+    return JsonResponse(response.json())
+
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class MpesaStkPushCallbackView(View):
+    def post(self, request):
+        data = json.loads(request.body)['Body']['stkCallback']
+        
+        if data['ResultCode'] == 0:
+            # if payment was successful
+             try:
+                with atomic():
+                    MpesaPayment.objects.create(
+                        MerchantRequestID=data['MerchantRequestID'],
+                        CheckoutRequestID=data['CheckoutRequestID'],
+                        ResultCode=data['ResultCode'],
+                        ResultDesc=data['ResultDesc'],
+                        Amount=data['CallbackMetadata']['Item'][0]['Value'],
+                        MpesaReceiptNumber=data['CallbackMetadata']['Item'][1]['Value'],
+                        Balance=data['CallbackMetadata']['Item'][2]['Value'],
+                        TransactionDate=data['CallbackMetadata']['Item'][3]['Value'],
+                        PhoneNumber=data['CallbackMetadata']['Item'][4]['Value'],
+                    )
+                    order_id = request.session['order_id']
+                    order = get_object_or_404(Order, id=order_id)
+                    order.paid = True
+                    order.save()
+                    return redirect(reverse('payment:payment_completed'))
+             except IntegrityError:
+                return HttpResponse('Payment already exists')
+
+        return JsonResponse({"ResultCode": 0, "ResultDesc": "Success", "ThirdPartyTransID": 0})
+
 
 def payment_completed(request):
     return render(request, 'payments/completed.html')
@@ -92,8 +137,8 @@ def register_urls(request):
     headers = {"Authorization": "Bearer %s" % access_token}
     options = {"ShortCode": LipaNaMpesaPassword.Test_c2b_shortcode,
                "ResponseType": "Completed",
-               "ConfirmationURL": "https://ea17-154-159-244-38.in.ngrok.io",
-               "ValidationURL": "https://ea17-154-159-244-38.in.ngrok.io/"}
+               "ConfirmationURL": "https://8597-102-222-146-36.in.ngrok.io",
+               "ValidationURL": "https://8597-102-222-146-36.in.ngrok.io"}
     response = requests.post(api_url, json=options, headers=headers)
 
     return HttpResponse(response.text)
@@ -114,10 +159,13 @@ def validation(request):
     return JsonResponse(dict(context))
 
 
-@csrf_exempt
+'''
 def confirmation(request):
+    response=lipa_na_mpesa(request)
+
     mpesa_body =request.body.decode('utf-8')
     mpesa_payment = json.loads(mpesa_body)
+    mpesa_payment=json.loads(request.body)
 
     payment = MpesaPayment(
         first_name=mpesa_payment['FirstName'],
@@ -140,6 +188,7 @@ def confirmation(request):
 
     return JsonResponse(dict(context))
 
+'''
 
 
 def payment_completed(request):
