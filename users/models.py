@@ -53,19 +53,6 @@ class User(AbstractUser):
         return hasattr(self, 'address')
      
     
-class Address(models.Model):
-    user=models.OneToOneField(
-        settings.AUTH_USER_MODEL,on_delete=models.CASCADE
-        )
-    full_name=models.CharField(max_length=100)
-    post_code=models.CharField(max_length=100)
-    address_line=models.CharField(max_length=100)
-    address_line2=models.CharField(max_length=100)
-    town_city=models.CharField(max_length=100)
-    delivery_instructions=models.CharField(max_length=100)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    default_address=models.BooleanField(default=False)
 
 
 
@@ -85,6 +72,11 @@ class Town(models.Model):
     county = models.ForeignKey(County, on_delete=models.CASCADE)
     slug = models.SlugField(max_length=50, unique=True, blank=True)
 
+
+    class Meta:
+        verbose_name_plural = "Towns / Cities"
+
+
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
         super(Town, self).save(*args, **kwargs)
@@ -92,6 +84,42 @@ class Town(models.Model):
     def __str__(self):
         return self.name
 
+
+class Address(models.Model):
+    user=models.ForeignKey(
+        settings.AUTH_USER_MODEL,on_delete=models.CASCADE
+        )
+    full_name=models.CharField(max_length=100)
+    post_code=models.CharField(max_length=100)
+    address_line=models.CharField(max_length=100)
+    address_line2=models.CharField(max_length=100)
+    town_city=models.ForeignKey(
+        Town,on_delete=models.CASCADE,
+        related_name='town_city',null=True,blank=True)
+    delivery_instructions=models.CharField(max_length=100)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    default_address=models.BooleanField(default=False)
+
+    class Meta:
+        verbose_name = _("Address")
+        verbose_name_plural = _("Addresses")
+
+
+    def save(self, *args, **kwargs):
+        if self.default_address:
+            try:
+                temp = Address.objects.get(default_address=True)
+                if self != temp:
+                    temp.default_address = False
+                    temp.save()
+            except Address.DoesNotExist:
+                pass
+        super(Address, self).save(*args, **kwargs)
+
+    
+    def __str__(self):
+        return self.full_name
 
 class PickupStation(models.Model):
     name=models.CharField(max_length=100)
@@ -101,5 +129,21 @@ class PickupStation(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     default_station=models.BooleanField(default=False)
+
+
+    class Meta: 
+        verbose_name = _("Pickup Station")
+        verbose_name_plural = _("Pickup Stations")
+    
+    def save(self, *args, **kwargs):
+        if self.default_station:
+            try:
+                temp = PickupStation.objects.get(default_station=True)
+                if self != temp:
+                    temp.default_station = False
+                    temp.save()
+            except PickupStation.DoesNotExist:
+                pass
+        super(PickupStation, self).save(*args, **kwargs)
     
     

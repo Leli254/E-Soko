@@ -8,16 +8,20 @@
   <h1>Checkout</h1>
   <div class="order-info">
     <h3>Your order</h3>
+
+    <h5>Cart Summary</h5>
     <ul>
       {% for item in cart %}
         <li>
           {{ item.quantity }}x {{ item.product.name }}
-          <span>${{ item.total_price }}</span>
+          <span>Ksh: {{ item.total_price }}</span>
         </li>
       {% endfor %}
     </ul>
-    <p>Total: ${{ cart.get_total_price }}</p>
+    <p>Total: Ksh: {{ cart.get_total_price }}</p>
   </div>
+  <hr>
+  <br>
   <form method="post" class="order-form">
     {{ form.as_p }}
     <p><input type="submit" value="Place order"></p>
