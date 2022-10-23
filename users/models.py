@@ -8,6 +8,7 @@ from django.conf import settings
 
 from .managers import UserManager
 
+
 GENDER_CHOICES = (
     ('male', 'Male'),
     ('female','Female'),
@@ -67,10 +68,36 @@ class Address(models.Model):
     default_address=models.BooleanField(default=False)
 
 
+
+class County(models.Model):
+    name = models.CharField(max_length=50)
+    slug = models.SlugField(max_length=50, unique=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name)
+        super(County, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return self.name
+
+class Town(models.Model):
+    name = models.CharField(max_length=50)
+    county = models.ForeignKey(County, on_delete=models.CASCADE)
+    slug = models.SlugField(max_length=50, unique=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name)
+        super(Town, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return self.name
+
+
 class PickupStation(models.Model):
     name=models.CharField(max_length=100)
     address=models.CharField(max_length=100)
     phone_number=models.CharField(max_length=100)
+    town=models.ForeignKey(Town,on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     default_station=models.BooleanField(default=False)
