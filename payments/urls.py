@@ -1,11 +1,12 @@
 from django.urls import path
 
 from . import views
-from .views import MpesaStkPushCallbackView
+from .views import MpesaStkPushCallbackView,PaymentTypeView
 
 app_name = 'payment'
 
 urlpatterns = [
+    path('payment-type/',PaymentTypeView.as_view(),name='payment_type'),
     path('access/token', views.getAccessToken, name='get_mpesa_access_token'),
     path('online/lipa', views.lipa_na_mpesa_online, name='lipa_na_mpesa'),
     path('c2b/register', views.register_urls, name="register_mpesa_validation"),
