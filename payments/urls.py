@@ -14,7 +14,8 @@ urlpatterns = [
     path('c2b/callback', views.call_back, name="call_back"),
     path('mpesa-number/',views.get_mpesa_number,name='get_mpesa_number'),
     path('lipa-na-mpesa/', views.lipa_na_mpesa, name='lipa_na_mpesa'),
+    path('stk-push/callback/', MpesaStkPushCallbackView.as_view(), name='mpesa-stk-push-callback'),
+    path('stripe-process/',views.stripe_payment_process,name='stripe_payment_process'),
     path('completed/', views.payment_completed, name='completed'),
     path('canceled/', views.payment_canceled, name='canceled'),
-    path('stk-push/callback/', MpesaStkPushCallbackView.as_view(), name='mpesa-stk-push-callback'),
 ]
