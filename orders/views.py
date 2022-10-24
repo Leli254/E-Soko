@@ -28,7 +28,7 @@ def order_create(request):
             # set the order in the session
             request.session['order_id'] = order.id
             # redirect for payment
-            return redirect(reverse('payment:get_mpesa_number'))
+            return redirect(reverse('payment:payment_type'))
     else:
         form = OrderCreateForm()
     return render(request,
