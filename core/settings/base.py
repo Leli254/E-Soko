@@ -215,3 +215,6 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 CELERY_BROKER_URL = "redis://localhost:6379"
 CELERY_RESULT_BACKEND = "redis://localhost:6379"
 
+#stripe settings
+STRIPE_PUBLISHABLE_KEY=env('STRIPE_PUBLISHABLE_KEY')
+STRIPE_SECRET_KEY =env'STRIPE_SECRET_KEY'
