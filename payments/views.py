@@ -10,6 +10,7 @@ from django.conf import settings
 from django.db.transaction import atomic, non_atomic_requests
 from django.http import HttpResponse ,HttpResponseForbidden ,JsonResponse
 from django.views import View
+from django.views.generic import CreateView,DetailView,TemplateView,UpdateView
 from django.db import IntegrityError
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
@@ -18,12 +19,15 @@ from django.shortcuts import render, redirect,reverse,get_object_or_404
 from django.utils import timezone
 
 
+
 from orders.models import Order
 from . mpesa import MpesaAccessToken,LipaNaMpesaPassword
 from .models import MpesaPayment
 from .forms import MpesaNumberForm
 
-
+#choose payment method view
+class PaymentTypeView(TemplateView):
+    template_name= 'payments/payment_type.html'
 
 
 def getAccessToken(request):
@@ -223,7 +227,7 @@ def lipa_na_mpesa_online(request):
 
 # create the Stripe instance
 stripe.api_key = settings.STRIPE_SECRET_KEY
-stripe.api_version = settings.STRIPE_API_VERSION
+#stripe.api_version = settings.STRIPE_API_VERSION
 
 
 def stripe_payment_process(request):
@@ -264,5 +268,5 @@ def stripe_payment_process(request):
         return redirect(session.url, code=303)
 
     else:
-        return render(request, 'payment/process.html', locals())
+        return render(request, 'payments/stripe_process.html', locals())
 
