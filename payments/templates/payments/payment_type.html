@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %} 
+
+
+  <h2>Choose your preffered Payment Method</h2>
+  <p>Pay via  <a href="{% url 'payment:get_mpesa_number' %}">Mpesa</a></p>
+  or
+  <hr>
+  Pay using <a href="{% url 'payment:stripe_payment_process' %}">Card</a>
+
+  {% endblock  %}
