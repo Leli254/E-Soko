@@ -1,4 +1,4 @@
-{% extends "shop/base.html" %}
+{% extends "base.html" %}
 {% load static %}
 
 {% block title %}Pay your order{% endblock %}
@@ -34,7 +34,7 @@
       </tr>
     </tbody>
   </table>
-  <form action="{% url "payment:process" %}" method="post">
+  <form action="{% url "payment:stripe_payment_process" %}" method="post">
     <input type="submit" value="Pay now">
     {% csrf_token %}
   </form>
