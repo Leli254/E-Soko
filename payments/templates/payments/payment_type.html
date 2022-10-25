@@ -1,12 +1,17 @@
 {% extends 'base.html' %}
 
+{% load static %} 
+
+
 {% block content %} 
 
 
   <h2>Choose your preffered Payment Method</h2>
-  <p>Pay via  <a href="{% url 'payment:get_mpesa_number' %}">Mpesa</a></p>
+  
+  <br>
+  <p>Pay via    <a href="{% url 'payment:get_mpesa_number' %}"><img src="{% static 'images/Lipanampesa.jpg' alt='Mpesa logo'   %}"></a></p>
   or
   <hr>
-  Pay using <a href="{% url 'payment:stripe_payment_process' %}">Card</a>
+  Pay using    <a href="{% url 'payment:stripe_payment_process' %}"><img src="{% static 'images/payments.png' %}" ></a>
 
   {% endblock  %}
