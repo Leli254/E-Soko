@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %} 
+
+<form method="post">{% csrf_token %}
+    <div class="form-group">
+            Sure, you want to delete  <b>{{ address.full_name }}</b> from your Address list?<br>
+            <br>
+            {{ form.errors }}
+            <br>
+            <input type="hidden" name="confirm_delete" value="confirm_delete">
+            <button type="submit" class="btn btn-primary">Confirm Delete</button>
+    </div>
+</form>
+
+{% endblock content %}

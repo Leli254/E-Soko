@@ -23,7 +23,7 @@ class User(AbstractUser):
     email = models.EmailField(_('email address'), unique=True)
     joindate=models.DateField(auto_now_add=True)
     uuid_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-    phone_number = models.CharField(max_length=20,unique=True)
+    phone_number = models.CharField(max_length=20)
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES,default='Male')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -59,6 +59,9 @@ class User(AbstractUser):
 class County(models.Model):
     name = models.CharField(max_length=50)
     slug = models.SlugField(max_length=50, unique=True, blank=True)
+
+    class Meta:
+        verbose_name_plural='Counties'
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)

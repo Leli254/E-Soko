@@ -3,7 +3,11 @@ from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.shortcuts import get_object_or_404, render
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import CreateView,DetailView,TemplateView,UpdateView
+from django.views.generic import (
+    CreateView,DetailView,
+    TemplateView,UpdateView,
+    DeleteView,ListView
+    )
 
 from.models import Address,User
 from .forms import AddressForm
@@ -46,7 +50,6 @@ class AddressUpdateView(LoginRequiredMixin,UpdateView):
         context['addresses'] = Address.objects.filter(user=self.request.user)
         return context
 
-
 class AddressDeleteView(LoginRequiredMixin,TemplateView):
     template_name = 'users/address_confirm_delete.html'
     
@@ -59,6 +62,3 @@ class AddressDeleteView(LoginRequiredMixin,TemplateView):
         address = get_object_or_404(Address, pk=self.kwargs['pk'])
         address.delete()
         return HttpResponseRedirect(reverse('users:address_list'))
-
-
-

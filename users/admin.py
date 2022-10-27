@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 from django.utils.translation import gettext_lazy as _
 
-from .models import User, Address,PickupStation
+from .models import User, Address,PickupStation,County,Town
 
 
 @admin.register(User)
@@ -41,3 +41,17 @@ class PickupStationAdmin(admin.ModelAdmin):
     ordering = ['name','address','phone_number']
 
 admin.site.register(PickupStation,PickupStationAdmin)
+
+class CountyAdmin(admin.ModelAdmin):
+    list_display = ['name','slug']
+    search_fields = ['name','slug']
+    ordering = ['name','slug']
+
+admin.site.register(County,CountyAdmin)
+
+class TownAdmin(admin.ModelAdmin):
+    list_display = ['name','slug','county']
+    search_fields = ['name','slug','county']
+    ordering = ['name','slug','county']
+
+admin.site.register(Town,TownAdmin)

@@ -5,15 +5,14 @@ from django.urls import path, include
 from django.views.generic import TemplateView
 
 
-from users.views import AddressCreateView
 from commons.views import contact
 
 
 urlpatterns = [
     path('soko-admin/', admin.site.urls),
-    path('users/', include('users.urls')),
+    path('users/', include('users.urls',namespace='users')),
     path('accounts/', include('allauth.urls')),
-    path('accounts/profile/', AddressCreateView.as_view(), name='profile_create'),
+    path('accounts/profile/', TemplateView.as_view(template_name='support.html'),name='support'),
     path('',TemplateView.as_view(template_name='home.html'),name='home'),
     path('help/',TemplateView.as_view(template_name='help.html'),name='help'),
     path('faqs/',TemplateView.as_view(template_name='faqs.html'),name='faqs'),
