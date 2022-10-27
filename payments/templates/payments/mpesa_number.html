@@ -2,8 +2,26 @@
 
 {% block content %} 
 
-<h2> Enter Your Mpesa Number</h2>
+<div class="order-info">
 
+    <h4><u>Your Order / Cart Summary</u></h4>
+       <br>
+    <ul>
+      {% for item in cart %}
+        <li>
+          {{ item.quantity }}x {{ item.product.name }}
+          <span>Ksh: {{ item.total_price }}</span>
+        </li>
+      {% endfor %}
+    </ul>
+    <p>Total: Ksh: {{ cart.get_total_price }}</p>
+  </div>
+  <hr>
+  <br>
+
+<b><p>Kindly wait for Mpesa pin prompt on your phone, after submitting your number below</p></b>
+
+<h2> Enter Your Mpesa Number</h2>
 
 <form method="post">{% csrf_token %}
     {{ form.as_p }}
