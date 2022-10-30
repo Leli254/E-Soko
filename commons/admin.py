@@ -1,3 +1,7 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import SubscribedUsers, Contact
+
+admin.site.register(SubscribedUsers)
+admin.site.register(Contact)
+

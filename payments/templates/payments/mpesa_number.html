@@ -7,14 +7,14 @@
     <h4><u>Your Order / Cart Summary</u></h4>
        <br>
     <ul>
-      {% for item in cart %}
+      {% for obj in objects_list%}
         <li>
-          {{ item.quantity }}x {{ item.product.name }}
-          <span>Ksh: {{ item.total_price }}</span>
+          {{ obj.quantity }}x {{ obj.product.name }}
+          <span>Ksh: {{ obj.get_cost}}</span>
         </li>
-      {% endfor %}
     </ul>
-    <p>Total: Ksh: {{ cart.get_total_price }}</p>
+    <p>Total: Ksh: {{ order.get_total_price }}</p>
+    {% endfor %}
   </div>
   <hr>
   <br>

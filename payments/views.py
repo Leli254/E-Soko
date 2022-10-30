@@ -25,10 +25,6 @@ from . mpesa import MpesaAccessToken,LipaNaMpesaPassword
 from .models import MpesaPayment
 from .forms import MpesaNumberForm
 
-#choose payment method view
-class PaymentTypeView(TemplateView):
-    template_name= 'payments/payment_type.html'
-
 
 def getAccessToken(request):
     consumer_key = settings.MPESA_CONSUMER_KEY
@@ -40,6 +36,11 @@ def getAccessToken(request):
     validated_mpesa_access_token = mpesa_access_token['access_token']
 
     return HttpResponse(validated_mpesa_access_token)
+
+#choose payment method view
+class PaymentTypeView(TemplateView):
+    template_name= 'payments/payment_type.html'
+
 
    
 def get_mpesa_number(request):
@@ -57,6 +58,28 @@ def get_mpesa_number(request):
     else:
         form = MpesaNumberForm()
     return render(request, 'payments/mpesa_number.html', {'form': form})
+
+
+#write above code as a class based view
+class MpesaNumberView(CreateView):
+    form_class = MpesaNumberForm
+    template_name = 'payments/mpesa_number.html'
+
+    def form_valid(self, form):
+        phone_number = form.cleaned_data['phone_number']
+        self.request.session['phone_number'] = phone_number
+        return redirect(reverse('payment:lipa_na_mpesa'))
+
+    #get the order id from the session, get the order object and pass it to the template
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        order_id = self.request.session.get('order_id', None)
+        order = get_object_or_404(Order, id=order_id)
+        context['order'] = order
+        return context
+
+    def get_success_url(self):
+        return reverse('payment:lipa_na_mpesa')
 
 
 

@@ -1,7 +1,7 @@
 from django.urls import path
 
 from . import views
-from .views import MpesaStkPushCallbackView,PaymentTypeView
+from .views import MpesaStkPushCallbackView,PaymentTypeView,MpesaNumberView
 
 app_name = 'payment'
 
@@ -14,6 +14,7 @@ urlpatterns = [
     path('c2b/validation', views.validation, name="validation"),
     path('c2b/callback', views.call_back, name="call_back"),
     path('mpesa-number/',views.get_mpesa_number,name='get_mpesa_number'),
+    #path('mpesa-number/',MpesaNumberView.as_view(),name='get_mpesa_number'),
     path('lipa-na-mpesa/', views.lipa_na_mpesa, name='lipa_na_mpesa'),
     path('stk-push/callback/', MpesaStkPushCallbackView.as_view(), name='mpesa-stk-push-callback'),
     path('stripe-process/',views.stripe_payment_process,name='stripe_payment_process'),

@@ -5,18 +5,19 @@ from django.urls import path, include
 from django.views.generic import TemplateView
 
 
-from commons.views import contact
+from commons.views import ContactView
 
 
 urlpatterns = [
     path('soko-admin/', admin.site.urls),
+    path('common/', include('commons.urls')),
     path('users/', include('users.urls',namespace='users')),
     path('accounts/', include('allauth.urls')),
     path('accounts/profile/', TemplateView.as_view(template_name='support.html'),name='support'),
     path('',TemplateView.as_view(template_name='home.html'),name='home'),
     path('help/',TemplateView.as_view(template_name='help.html'),name='help'),
     path('faqs/',TemplateView.as_view(template_name='faqs.html'),name='faqs'),
-    path('contact/',contact,name='contact'),
+    path('contact/',ContactView.as_view(),name='contact'),
     path('cart/', include('cart.urls',namespace='cart')),
     path('orders/', include('orders.urls',namespace='orders')),
     path('payment/', include('payments.urls', namespace='payment')),

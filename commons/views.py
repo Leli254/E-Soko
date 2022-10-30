@@ -1,38 +1,85 @@
+import re
+
 from django.shortcuts import render, redirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView,DetailView,TemplateView,UpdateView
 from django.core.mail import send_mail, BadHeaderError
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
+from django.conf import settings
 
+
+from .models import SubscribedUsers
 from .forms import ContactForm
 
 
 
 
+class ContactView(CreateView):
+	template_name = 'contact.html'
+	form_class = ContactForm
+	success_url = reverse_lazy('contact')
 
-def contact(request):
-	if request.method == 'POST':
-		form = ContactForm(request.POST)
-		if form.is_valid():
-			subject = "Website Inquiry" 
-			body = {
-			'first_name': form.cleaned_data['first_name'], 
-			'last_name': form.cleaned_data['last_name'], 
-			'email': form.cleaned_data['email_address'], 
-			'message':form.cleaned_data['message'], 
-			}
-			message = "\n".join(body.values())
+	def form_valid(self, form):
+		form.save()
+		return super().form_valid(form)
 
+	def form_invalid(self, form):
+		return super().form_invalid(form)
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		context['title'] = 'Contact Us'
+		return context
+
+	def send_mail(self, form):
+		subject = form.cleaned_data['subject']
+		from_email = form.cleaned_data['from_email']
+		if subject and from_email:
 			try:
-				send_mail(subject, message, 'admin@example.com', ['admin@example.com']) 
+				send_mail(subject, message, from_email, [''])
 			except BadHeaderError:
 				return HttpResponse('Invalid header found.')
-			return redirect ("home")
-      
-	form = ContactForm()
-	return render(request, "contact.html", {'form':form})
 
-"""
-convert this function based view to class based view
-"""
+class HomeView(TemplateView):
+	template_name = 'home.html'
 
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		context['title'] = 'Home'
+		return context
+
+
+
+class NewsLetterView(CreateView):
+	template_name = 'index.html'
+	model = SubscribedUsers
+	fields = ['name','email']
+	success_url = reverse_lazy('index')
+
+	def form_valid(self, form):
+		subject = 'NewsLetter Subscription'
+		message = 'Hello ' + form.cleaned_data['name'] + ', Thanks for subscribing us. You will get notification of latest articles posted on our website. Please do not reply on this email.'
+		email_from = settings.EMAIL_HOST_USER
+		recipient_list = [form.cleaned_data['email'], ]
+		send_mail(subject, message, email_from, recipient_list)
+		return super().form_valid(form)
+
+
+class EmailValidateView(DetailView):
+	model = SubscribedUsers
+	template_name = 'index.html'
+	context_object_name = 'email'
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		context['title'] = 'Email Validation'
+		return context
+
+	def get_object(self, *args, **kwargs):
+		email = self.request.GET.get('email')
+		if SubscribedUsers.objects.filter(email=email).exists():
+			res = JsonResponse({'msg': 'Email already exists'})
+			return res
+		else:
+			res = JsonResponse({'msg': 'Email does not exists'})
+			return res
