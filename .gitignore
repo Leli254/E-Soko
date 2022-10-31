@@ -55,3 +55,6 @@ secrets.json
 .vscode/
 /.vscode/
 /.vscode/settings.json
+
+#migration files
+*/migrations/*
