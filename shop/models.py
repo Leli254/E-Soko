@@ -2,11 +2,21 @@ import uuid
 
 from django.db import models
 from django.urls import reverse
+from django.conf import settings
+
+
+
 
 class Vendor(models.Model):
     name = models.CharField(max_length=100)
+    owner=models.OneToOneField(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, 
+        related_name='vendor', null=True, blank=True)
     slug = models.SlugField(max_length=100)
     description = models.TextField(blank=True)
+    phone_number=models.CharField(max_length=15, blank=True, null=True)
+    email=models.EmailField(blank=True, null=True)
+    location=models.CharField(max_length=100,default='Nairobi')
     image = models.ImageField(upload_to='images/', blank=True)
     uuid_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     created = models.DateTimeField(auto_now_add=True)
