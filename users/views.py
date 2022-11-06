@@ -62,3 +62,18 @@ class AddressDeleteView(LoginRequiredMixin,TemplateView):
         address = get_object_or_404(Address, pk=self.kwargs['pk'])
         address.delete()
         return HttpResponseRedirect(reverse('users:address_list'))
+
+
+class AddressDefaultView(LoginRequiredMixin,TemplateView):
+    template_name = 'users/address_list.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['addresses'] = Address.objects.filter(user=self.request.user)
+        return context
+    
+    def post(self, request, *args, **kwargs):
+        address = get_object_or_404(Address, pk=self.kwargs['pk'])
+        address.default = True
+        address.save()
+        return HttpResponseRedirect(reverse('users:address_list'))
