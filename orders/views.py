@@ -34,11 +34,13 @@ class OrderCreateView(LoginRequiredMixin,CreateView):
             order.coupon = cart.coupon
             order.discount = cart.coupon.discount
         order.save()
+        
         for item in cart:
             OrderItem.objects.create(order=order,
                                     product=item['product'],
-                                    price=item['price'],
+                                    price=item['price']-item['discount'],
                                     quantity=item['quantity'])
+        
         # clear the cart
         cart.clear()
         # launch asynchronous task
