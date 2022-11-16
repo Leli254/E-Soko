@@ -4,14 +4,50 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy,reverse    
 
 
-
 from .models import OrderItem,Order
 from .forms import OrderCreateForm
 from .tasks import order_created
 from cart.cart import Cart
-from users.models import Address,PickupStation
 
 
+class OrderCreate(LoginRequiredMixin,CreateView):
+    model = Order
+    form_class = OrderCreateForm
+    template_name = 'orders/order/create.html'
+    success_url = reverse_lazy('payment:payment_type')
+    login_url = reverse_lazy('users:login')
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['cart'] = Cart(self.request)
+        return context
+
+    def form_valid(self, form):
+        order = form.save(commit=False)
+        cart = Cart(self.request)
+        if cart.coupon:
+            order.coupon = cart.coupon
+            order.discount = cart.coupon.discount
+        order.save()
+        for item in cart:
+            OrderItem.objects.create(order=order,
+                                    product=item['product'],
+                                    price=item['price'],
+                                    quantity=item['quantity'])
+        # clear the cart
+        cart.clear()
+        # launch asynchronous task
+        order_created.delay(order.id)
+        # set the order in the session
+        self.request.session['order_id'] = order.id
+        return super().form_valid(form)
+        
+        
 class OrderCreateView(LoginRequiredMixin,CreateView):
     model = Order
     form_class = OrderCreateForm
@@ -33,6 +69,10 @@ class OrderCreateView(LoginRequiredMixin,CreateView):
     def form_valid(self, form):
         response = super().form_valid(form)
         cart = Cart(self.request)
+        if cart.coupon:
+            self.object.coupon = cart.coupon
+            self.object.discount = cart.coupon.discount
+            self.object.save()
         for item in cart:
             OrderItem.objects.create(order=self.object,
                                     product=item['product'],
@@ -50,6 +90,8 @@ class OrderCreateView(LoginRequiredMixin,CreateView):
     def get_success_url(self):
         return reverse('payment:payment_type')
 
+
+   
 class OrderListView(LoginRequiredMixin,ListView):
     model = Order
     template_name = 'orders/list.html'
