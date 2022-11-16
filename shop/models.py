@@ -69,9 +69,12 @@ class Product(models.Model):
     image = models.ImageField(upload_to='products/%Y/%m/%d',
                               blank=True)
     description = models.TextField(blank=True)
-    price = models.DecimalField(max_digits=10,
-                                decimal_places=2)
+    price_before_discount = models.DecimalField(
+        max_digits=10, decimal_places=2,blank=True, null=True)
+    price = models.DecimalField(
+        max_digits=10,decimal_places=2,verbose_name='Price after discount')
     available = models.BooleanField(default=True)
+    stock = models.PositiveIntegerField(default=0)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     vendor=models.ForeignKey(
@@ -91,3 +94,26 @@ class Product(models.Model):
     def get_absolute_url(self):
         return reverse('shop:product_detail',
                        args=[self.id, self.slug])
+
+
+    
+
+
+class Review(models.Model):
+    product=models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews')
+    user=models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='reviews')
+    rating=models.IntegerField()
+    comment=models.TextField()
+    created=models.DateTimeField(auto_now_add=True)
+    updated=models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering=['-created']
+
+    def __str__(self):
+        return f'{self.rating} review for {self.product.name}'
+
+    def get_absolute_url(self):
+        return reverse('shop:product_detail',
+                       args=[self.product.id, self.product.slug])

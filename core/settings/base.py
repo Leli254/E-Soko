@@ -35,6 +35,7 @@ USER_DEFINED_APPS = [
     'cart.apps.CartConfig',
     'orders.apps.OrdersConfig',
     'payments.apps.PaymentsConfig',
+    'coupons.apps.CouponsConfig',
 ]
 
 DJANGO_APPS = [
@@ -198,10 +199,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CRISPY_TEMPLATE_PACK = 'uni_form'
 
 #mpesa credentials
-MPESA_CONSUMER_KEY = 'L2IbYvA0RoQM26wxaPDl3dKi5GDcOKPD'
+MPESA_CONSUMER_KEY = 'JfgzduzMJEGJVCVaGqy1UmRphPKpHqQR'
 #MPESA_CONSUMER_KEY = env('MPESA_CONSUMER_KEY')
 #MPESA_CONSUMER_SECRET = env('MPESA_CONSUMER_SECRET')
-MPESA_CONSUMER_SECRET = 'lHCgY3MSFvnloQHH'
+MPESA_CONSUMER_SECRET = 'atmBygXnWgNweouT'
 MPESA_API_URL = 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials'
 
 

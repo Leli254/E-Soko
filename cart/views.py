@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
+from django.views.generic import View
+
 from shop.models import Product
 from .cart import Cart
 from .forms import CartAddProductForm
@@ -33,3 +35,13 @@ def cart_detail(request):
                             'quantity': item['quantity'],
                             'override': True})
     return render(request, 'cart/detail.html', {'cart': cart})
+
+
+#a class based view to add items to the cart withou using a form
+class CartAdd(View):
+    def get(self, request, *args, **kwargs):
+        product_id = self.kwargs['product_id']
+        product = get_object_or_404(Product, id=product_id)
+        cart = Cart(request)
+        cart.add(product=product, quantity=1, override_quantity=False)
+        return redirect('cart:cart_detail')

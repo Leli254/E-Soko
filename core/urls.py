@@ -14,14 +14,14 @@ urlpatterns = [
     path('users/', include('users.urls',namespace='users')),
     path('accounts/', include('allauth.urls')),
     path('accounts/profile/', TemplateView.as_view(template_name='support.html'),name='support'),
-    path('',TemplateView.as_view(template_name='home.html'),name='home'),
+    #path('',TemplateView.as_view(template_name='home.html'),name='home'),
     path('help/',TemplateView.as_view(template_name='help.html'),name='help'),
     path('faqs/',TemplateView.as_view(template_name='faqs.html'),name='faqs'),
     path('contact/',ContactView.as_view(),name='contact'),
     path('cart/', include('cart.urls',namespace='cart')),
     path('orders/', include('orders.urls',namespace='orders')),
     path('payment/', include('payments.urls', namespace='payment')),
-    path('shop/', include('shop.urls')),
+    path('', include('shop.urls')),
 ]
 
 

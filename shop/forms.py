@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Vendor
+from .models import Vendor,Review
 
 
 class VendorForm(forms.ModelForm):
@@ -37,3 +37,38 @@ class VendorForm(forms.ModelForm):
         return email
 
 
+class ReviewForm(forms.ModelForm):
+    class Meta:
+        model = Review
+        fields = ('product', 'user', 'rating', 'comment')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['product'].widget.attrs.update({'class': 'form-control'})
+        self.fields['user'].widget.attrs.update({'class': 'form-control'})
+        self.fields['rating'].widget.attrs.update({'class': 'form-control'})
+        self.fields['comment'].widget.attrs.update({'class': 'form-control'})
+
+    def clean_product(self):
+        product = self.cleaned_data.get('product')
+        if not product:
+            raise forms.ValidationError('This field is required')
+        return product
+
+    def clean_user(self):
+        user = self.cleaned_data.get('user')
+        if not user:
+            raise forms.ValidationError('This field is required')
+        return user
+
+    def clean_rating(self):
+        rating = self.cleaned_data.get('rating')
+        if not rating:
+            raise forms.ValidationError('This field is required')
+        return rating
+
+    def clean_comment(self):
+        comment = self.cleaned_data.get('comment')
+        if not comment:
+            raise forms.ValidationError('This field is required')
+        return comment

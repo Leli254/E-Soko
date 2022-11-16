@@ -9,6 +9,7 @@ from django.views.generic import (
 
 from cart.forms import CartAddProductForm
 from .models import Category, Product
+from .forms import VendorForm,ReviewForm
 
 
 
@@ -41,6 +42,7 @@ class ProductDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['cart_product_form'] = CartAddProductForm()
+        context['reviews']=self.object.reviews.all()
         return context
     
     
@@ -54,3 +56,64 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.owner = self.request.user
         return super().form_valid(form)
+
+
+
+class ProductUpdateView(LoginRequiredMixin, UpdateView):
+    model = Product
+    fields = ['name', 'category', 'description', 'price', 'available', 'image']
+    template_name = 'shop/product/update.html'
+    success_url = reverse_lazy('shop:product_list')
+    
+    def form_valid(self, form):
+        form.instance.owner = self.request.user
+        return super().form_valid(form)
+
+
+class ProductDeleteView(LoginRequiredMixin, DeleteView):
+    model = Product
+    template_name = 'shop/product/delete.html'
+    success_url = reverse_lazy('shop:product_list')
+    
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset.filter(owner=self.request.user)
+
+
+class ReviewCreateView(LoginRequiredMixin, CreateView):
+    form_class=ReviewForm
+    template_name = 'shop/review/create.html'
+    success_url = reverse_lazy('shop:product_list')
+
+    def form_valid(self, form):
+        form.instance.owner = self.request.user
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['product'] = Product.objects.get(id=self.kwargs['pk'])
+        return context
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['product'] = Product.objects.get(id=self.kwargs['pk'])
+        return kwargs
+
+class ReviewUpdateView(LoginRequiredMixin, UpdateView):
+    form_class=ReviewForm
+    template_name = 'shop/review/update.html'
+    success_url = reverse_lazy('shop:product_list')
+
+    def form_valid(self, form):
+        form.instance.owner = self.request.user
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['product'] = Product.objects.get(id=self.kwargs['pk'])
+        return context
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['product'] = Product.objects.get(id=self.kwargs['pk'])
+        return kwargs

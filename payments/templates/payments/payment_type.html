@@ -9,9 +9,9 @@
   <h2>Choose your preffered Payment Method</h2>
   
   <br>
-  <p>Pay via    <a href="{% url 'payment:get_mpesa_number' %}"><img src="{% static 'images/Lipanampesa.jpg' alt='Mpesa logo'   %}"></a></p>
+  <p>Pay via    <a href="{% url 'payment:get_mpesa_number' %}"><img src="{% static 'img/Lipanampesa.jpg' alt='Mpesa logo'   %}"></a></p>
   or
   <hr>
-  Pay using    <a href="{% url 'payment:stripe_payment_process' %}"><img src="{% static 'images/payments.png' %}" ></a>
+  Pay using    <a href="{% url 'payment:stripe_payment_process' %}"><img src="{% static 'img/payments.png' %}" ></a>
 
   {% endblock  %}
