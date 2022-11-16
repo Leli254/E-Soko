@@ -10,7 +10,7 @@ from .tasks import order_created
 from cart.cart import Cart
 
 
-class OrderCreate(LoginRequiredMixin,CreateView):
+class OrderCreateView(LoginRequiredMixin,CreateView):
     model = Order
     form_class = OrderCreateForm
     template_name = 'orders/order/create.html'
@@ -47,49 +47,6 @@ class OrderCreate(LoginRequiredMixin,CreateView):
         self.request.session['order_id'] = order.id
         return super().form_valid(form)
         
-        
-class OrderCreateView(LoginRequiredMixin,CreateView):
-    model = Order
-    form_class = OrderCreateForm
-    template_name = 'orders/create.html'
-    success_url = reverse_lazy('orders:order_list')
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs['request'] = self.request
-        return kwargs
-
-
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['cart'] = Cart(self.request)
-        return context
-
-    def form_valid(self, form):
-        response = super().form_valid(form)
-        cart = Cart(self.request)
-        if cart.coupon:
-            self.object.coupon = cart.coupon
-            self.object.discount = cart.coupon.discount
-            self.object.save()
-        for item in cart:
-            OrderItem.objects.create(order=self.object,
-                                    product=item['product'],
-                                    price=item['price'],
-                                    quantity=item['quantity'])
-        # clear the cart
-        cart.clear()
-        # launch asynchronous task
-        order_created.delay(self.object.id)
-        # set the order in the session
-        self.request.session['order_id'] = self.object.id
-        # redirect for payment
-        return redirect(reverse('payment:payment_type'))
-
-    def get_success_url(self):
-        return reverse('payment:payment_type')
-
 
    
 class OrderListView(LoginRequiredMixin,ListView):
