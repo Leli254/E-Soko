@@ -13,6 +13,13 @@ class Contact(models.Model):
         verbose_name='Contact'
         verbose_name_plural = 'Contacts'
 
-class SubscribedUsers(models.Model):
+class Subscriber(models.Model):
     email = models.CharField(unique=True, max_length=50)
-    name = models.CharField(max_length=50)
+    date_added = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Newsletter Subscriber'
+        verbose_name_plural = 'Newsletter Subscribers'
+
+    def __str__(self):
+        return '%s' % self.email

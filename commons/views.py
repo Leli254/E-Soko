@@ -8,7 +8,7 @@ from django.http import HttpResponse, JsonResponse
 from django.conf import settings
 
 
-from .models import SubscribedUsers
+from .models import Subscriber
 from .forms import ContactForm
 
 
@@ -52,7 +52,7 @@ class HomeView(TemplateView):
 
 class NewsLetterView(CreateView):
 	template_name = 'index.html'
-	model = SubscribedUsers
+	model = Subscriber
 	fields = ['name','email']
 	success_url = reverse_lazy('index')
 
@@ -66,7 +66,7 @@ class NewsLetterView(CreateView):
 
 
 class EmailValidateView(DetailView):
-	model = SubscribedUsers
+	model = Subscriber
 	template_name = 'index.html'
 	context_object_name = 'email'
 
@@ -77,7 +77,7 @@ class EmailValidateView(DetailView):
 
 	def get_object(self, *args, **kwargs):
 		email = self.request.GET.get('email')
-		if SubscribedUsers.objects.filter(email=email).exists():
+		if Subscriber.objects.filter(email=email).exists():
 			res = JsonResponse({'msg': 'Email already exists'})
 			return res
 		else:

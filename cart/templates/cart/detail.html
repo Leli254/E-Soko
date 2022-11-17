@@ -73,18 +73,13 @@ KSH {{ cart.get_total_price_after_discount|floatformat:2 }}
     </tbody>
   </table>
   <p>Apply a coupon:</p>
-<form action="{% url "coupons:apply" %}" method="post">
+<form action="{% url 'coupons:apply' %}" method="post">
 {{ coupon_apply_form }}
 <input type="submit" value="Apply">
 {% csrf_token %}
 </form>
-  <div class="cart-buttons">
-    <a href="{% url "shop:product_list" %}" class="button">Continue shopping</a>
-    <a href="{% url "cart:cart_clear" %}" class="button">Clear cart</a>
-    <a href="{% url "cart:cart_checkout" %}" class="button">Checkout</a>
-  <p class="text-right">
-    <a href="{% url "shop:product_list" %}" class="button
+    <a href="{% url 'shop:product_list' %}" class="button
     light">Continue shopping</a>
-    <a href="{% url "orders:order_create" %}" class="button">Checkout</a>
+    <a href="{% url 'orders:order_create' %}" class="button">Checkout</a>
   </p>
 {% endblock %}

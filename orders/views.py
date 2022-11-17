@@ -13,7 +13,7 @@ from cart.cart import Cart
 class OrderCreateView(LoginRequiredMixin,CreateView):
     model = Order
     form_class = OrderCreateForm
-    template_name = 'orders/order/create.html'
+    template_name = 'orders/create.html'
     success_url = reverse_lazy('payment:payment_type')
     login_url = reverse_lazy('users:login')
 

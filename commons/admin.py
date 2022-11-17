@@ -1,7 +1,7 @@
 from django.contrib import admin
 
-from .models import SubscribedUsers, Contact
+from .models import Subscriber, Contact
 
-admin.site.register(SubscribedUsers)
+admin.site.register(Subscriber)
 admin.site.register(Contact)
 
