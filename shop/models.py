@@ -104,7 +104,7 @@ class Review(models.Model):
     user=models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='reviews')
     rating=models.IntegerField()
-    comment=models.TextField()
+    comment=models.TextField(null=True, blank=True)
     created=models.DateTimeField(auto_now_add=True)
     updated=models.DateTimeField(auto_now=True)
 
