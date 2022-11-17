@@ -80,9 +80,10 @@ class Product(models.Model):
     sku = models.CharField(max_length=50, blank=True, null=True)
     model=models.CharField(max_length=100, blank=True, null=True)
     size = models.CharField(max_length=100, blank=True, null=True)
-    weight = models.DecimalField(max_digits=10, decimal_places=2,verbose_name='Weight (kg)')
+    weight = models.DecimalField(
+        max_digits=10, decimal_places=2,verbose_name='Weight (kg)',blank=True, null=True)
     main_material = models.CharField(max_length=100, blank=True, null=True)
-    care_instructions = models.TextField(blank=True,verbose_name='Care Label')
+    care_instructions = models.TextField(blank=True,verbose_name='Care Label',null=True)
     price_before_discount = models.DecimalField(
         max_digits=10, decimal_places=2,blank=True, null=True)
     price = models.DecimalField(
@@ -97,6 +98,7 @@ class Product(models.Model):
     vendor=models.ForeignKey(
         Vendor,related_name='products',on_delete=models.CASCADE,blank=True,null=True)
 
+    
     class Meta:
         ordering = ['name']
         indexes = [

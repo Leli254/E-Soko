@@ -3,13 +3,34 @@ from decimal import Decimal
 from django.db import models
 from django.utils.crypto import get_random_string
 from django.core.validators import MinValueValidator,MaxValueValidator
+from django.conf import settings
 
 
 from shop.models import Product
 from coupons.models import Coupon
 from users.models import Address,PickupStation
 
+
+
 class Order(models.Model):
+    PENDING= 'pending'
+    PROCESSING= 'processing'
+    SHIPPED= 'shipped'
+    OUT_FOR_DELIVERY = 'out_for_delivery'
+    DELIVERED= 'delivered'
+    CANCELLED= 'cancelled'
+
+    STATUS_CHOICES = (
+    ('pending','Pending'),
+    ('processing','Processing'),
+    ('shipped','Shipped'),
+    ('out_for_delivery','Out for Delivery'),
+    ('delivered','Delivered'),
+    ('cancelled','Cancelled'),
+    )
+    user=models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='orders', 
+        null=True, blank=True)
     address = models.ForeignKey(
         Address, on_delete=models.CASCADE, null=True, blank=True)
     pickup_station = models.ForeignKey(
@@ -19,6 +40,7 @@ class Order(models.Model):
         Coupon,related_name='orders',null=True,blank=True,on_delete=models.SET_NULL)
     discount= models.IntegerField(
         default=0,validators=[MinValueValidator(0),MaxValueValidator(100)])
+    status=models.CharField(max_length=20,choices=STATUS_CHOICES,default='pending')
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     paid = models.BooleanField(default=False)
@@ -35,7 +57,8 @@ class Order(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.order_number:
-            self.order_number = get_random_string(length=9, allowed_chars='1234567890')
+            self.order_number = get_random_string(
+                length=9, allowed_chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')
         super().save(*args, **kwargs)
 
 

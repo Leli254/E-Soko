@@ -1,7 +1,13 @@
+from io import BytesIO
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import CreateView,DetailView,TemplateView,UpdateView,ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.urls import reverse_lazy,reverse    
+from django.urls import reverse_lazy,reverse  
+from django.http import HttpResponse
+from django.template.loader import get_template
+
+from xhtml2pdf import pisa
 
 
 from .models import OrderItem,Order
@@ -58,3 +64,16 @@ class OrderListView(LoginRequiredMixin,ListView):
 
     def get_queryset(self):
         return Order.objects.filter(user=self.request.user)
+
+
+def render_to_pdf(template_src, context_dict={}):
+    template = get_template(template_src)
+    html  = template
+    result = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
+    if not pdf.err:
+        return HttpResponse(result.getvalue(), content_type='application/pdf')
+    return None
+
+
+

@@ -23,3 +23,17 @@ class Subscriber(models.Model):
 
     def __str__(self):
         return '%s' % self.email
+
+
+class Feedback(models.Model):
+    name=models.CharField(max_length=40)
+    feedback=models.CharField(max_length=500)
+    email=models.EmailField(max_length=100)
+    date= models.DateField(auto_now_add=True,null=True)
+
+    class Meta:
+        verbose_name='Feedback'
+        verbose_name_plural = 'Feedbacks'
+
+    def __str__(self):
+        return self.name

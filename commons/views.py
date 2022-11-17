@@ -9,7 +9,7 @@ from django.conf import settings
 
 
 from .models import Subscriber
-from .forms import ContactForm
+from .forms import ContactForm,FeedbackForm
 
 
 
@@ -83,3 +83,30 @@ class EmailValidateView(DetailView):
 		else:
 			res = JsonResponse({'msg': 'Email does not exists'})
 			return res
+
+
+class FeedbackView(CreateView):
+	template_name = 'feedback.html'
+	form_class = FeedbackForm
+	success_url = reverse_lazy('feedback')
+
+	def form_valid(self, form):
+		form.save()
+		return super().form_valid(form)
+
+	def form_invalid(self, form):
+		return super().form_invalid(form)
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		context['title'] = 'Feedback'
+		return context
+
+	def send_mail(self, form):
+		subject = form.cleaned_data['subject']
+		from_email = form.cleaned_data['from_email']
+		if subject and from_email:
+			try:
+				send_mail(subject, message, from_email, [''])
+			except BadHeaderError:
+				return HttpResponse('Invalid header found.')
