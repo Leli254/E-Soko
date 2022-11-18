@@ -7,11 +7,33 @@
 
 
   <h2>Choose your preffered Payment Method</h2>
-  
   <br>
-  <p>Pay via    <a href="{% url 'payment:get_mpesa_number' %}"><img src="{% static 'img/Lipanampesa.jpg' alt='Mpesa logo'   %}"></a></p>
-  or
-  <hr>
-  Pay using    <a href="{% url 'payment:stripe_payment_process' %}"><img src="{% static 'img/payments.png' %}" ></a>
+  <br>
+  <br>
+  <div class="row">
+
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title<h5>Pay with Mpesa</h5>
+          <p class="card-text">Pay with Mpesa</p>
+          <a href="{% url 'payment:get_mpesa_number' %}">
+            <img src="{% static 'img/mpesa-logo.png' alt='Mpesa logo'   %}"></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title<h5>Pay with Card</h5>
+          <p class="card-text">Pay with Card</p>
+          <a href="{% url 'payment:stripe_payment_process' %}">
+            <img src="{% static 'img/payments.png' %}" ></a>
+        </div>
+        </div>
+        </div>
+
+      </div>
 
   {% endblock  %}
