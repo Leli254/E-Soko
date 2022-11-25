@@ -14,8 +14,11 @@ from .models import OrderItem,Order
 from .forms import OrderCreateForm
 from .tasks import order_created
 from cart.cart import Cart
+from coupons.forms import CouponApplyForm
 
 
+
+        
 class OrderCreateView(LoginRequiredMixin,CreateView):
     model = Order
     form_class = OrderCreateForm
@@ -31,20 +34,18 @@ class OrderCreateView(LoginRequiredMixin,CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['cart'] = Cart(self.request)
+        context['coupon_apply_form'] = CouponApplyForm()
         return context
 
     def form_valid(self, form):
         order = form.save(commit=False)
         cart = Cart(self.request)
-        if cart.coupon:
-            order.coupon = cart.coupon
-            order.discount = cart.coupon.discount
         order.save()
         
         for item in cart:
             OrderItem.objects.create(order=order,
                                     product=item['product'],
-                                    price=item['price']-item['discount'],
+                                    price=item['price'],
                                     quantity=item['quantity'])
         
         # clear the cart
@@ -54,9 +55,38 @@ class OrderCreateView(LoginRequiredMixin,CreateView):
         # set the order in the session
         self.request.session['order_id'] = order.id
         return super().form_valid(form)
-        
+#write above class based view as function based view
 
-   
+def order_create(request):
+    cart = Cart(request)
+    if request.method == 'POST':
+        form = OrderCreateForm(request.POST)
+        if form.is_valid():
+            order = form.save(commit=False)
+            if cart.coupon:
+                order.coupon = cart.coupon
+                order.discount = cart.coupon.discount
+            order.save()
+            for item in cart:
+                OrderItem.objects.create(order=order,
+                                        product=item['product'],
+                                        price=item['price'],
+                                        quantity=item['quantity'])
+            # clear the cart
+            cart.clear()
+            # launch asynchronous task
+            order_created.delay(order.id)
+            # set the order in the session
+            request.session['order_id'] = order.id
+            # redirect for payment
+            return redirect(reverse('payment:payment_type'))
+    else:
+        form = OrderCreateForm()
+    return render(request,
+                'orders/create.html',
+                {'cart': cart, 'form': form})
+
+
 class OrderListView(LoginRequiredMixin,ListView):
     model = Order
     template_name = 'orders/list.html'

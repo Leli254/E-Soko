@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}
+Order Details
+{% endblock %}
+{% block content %}
+
+<h4>
+    <a href="{% url 'orders:cancelled_orders' %}"><i class="fa fa-angle-left mr-2"></i></a>
+    Order Details
+</h4>
+<hr>
+<div class="card mb-3">
+  <div class="card-body">
+    <h6 class="card-title">Order No:&nbsp;  {{ object.order_number}}</h6>
+    <p>Placed on {{ object.created|date:"d-M-Y" }}</p>
+    <p>Total: Ksh {{ object.get_total_cost }}</p>
+    <hr>
+   <p>ITEMS IN THIS ORDER</p>
+   <div class="card mb-3">
+    <div class="card-body">
+        <p class ="text-muted">
+        <span class="badge badge-success">{{ object.order_status }}</span> &nbsp;
+        On: {{ object.updated|date:"d-M-Y"  }}</p>
+        
+        <hr>
+        {% for item in object.items.all %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">
+                    {{item.product.name}}
+                </h5>
+                <img  style="width:100px;height:80px;" src="{% if item.product.thumb_nail %}{{ item.product.image.url }}{% else %}{% static 'img/no_image.png' %}{% endif %}" >
+                <br>
+                <br>
+                <p class="card-text">QTY: {{ item.quantity }}</p>
+                <p class="card-text">Product Price: {{ item.product.price }}</p>
+                <p align="left">
+                    <a href="{% url 'cart:cart_add_single_item' item.product.id %}"class="btn  btn-warning">BUY AGAIN</a>
+                </p>
+
+                </div>
+            </div>
+        {% endfor %}
+    </div>             
+    </div>
+
+   </div>
+  </div>
+  <p align="center">
+  <a href="{% url 'help' %}" class="btn btn-primary">NEED HELP?</a></p>
+</div>
+
+<br>
+{% include "shop/product/recommended.html" %}
+<br>
+{%include "shop/product/recently_viewed.html" %}
+
+{% endblock %}
