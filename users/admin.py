@@ -2,8 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 from django.utils.translation import gettext_lazy as _
 
-from .models import User, Address,PickupStation,County,Town
-
+from .models import User, Address,PickupStation
 
 @admin.register(User)
 class UserAdmin(DjangoUserAdmin):
@@ -28,9 +27,9 @@ class UserAdmin(DjangoUserAdmin):
 
 
 class AddressAdmin(admin.ModelAdmin):
-    list_display = ['user','full_name','post_code','address_line','address_line2','town_city']
-    search_fields = ['user','full_name','post_code','address_line','address_line2','town_city']
-    ordering = ['user','full_name','post_code','address_line','address_line2','town_city']
+    list_display =  ['user','address_name','phone_number','additional_phone_number',]
+    search_fields = ['user','address_name','phone_number','additional_phone_number',]
+    ordering =  ['user','address_name','phone_number','additional_phone_number',]
 
 admin.site.register(Address,AddressAdmin)
 
@@ -42,16 +41,3 @@ class PickupStationAdmin(admin.ModelAdmin):
 
 admin.site.register(PickupStation,PickupStationAdmin)
 
-class CountyAdmin(admin.ModelAdmin):
-    list_display = ['name','slug']
-    search_fields = ['name','slug']
-    ordering = ['name','slug']
-
-admin.site.register(County,CountyAdmin)
-
-class TownAdmin(admin.ModelAdmin):
-    list_display = ['name','slug','county']
-    search_fields = ['name','slug','county']
-    ordering = ['name','slug','county']
-
-admin.site.register(Town,TownAdmin)

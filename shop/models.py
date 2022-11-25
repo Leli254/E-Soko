@@ -6,6 +6,8 @@ from django.core.files import File
 from django.db import models
 from django.urls import reverse
 from django.conf import settings
+from django.core.validators import MinValueValidator, MaxValueValidator
+from django.utils import timezone
 
 
 
@@ -65,6 +67,14 @@ class Category(models.Model):
 
 
 class Product(models.Model):
+    SIZE_CHOICES = (
+        ('S', 'Small'),
+        ('M', 'Medium'),
+        ('L', 'Large'),
+        ('XL', 'Extra Large'),
+        ('XXL', 'Extra Extra Large'),
+    )
+
     category = models.ForeignKey(Category,
                                  related_name='products',
                                  on_delete=models.CASCADE)
@@ -79,7 +89,10 @@ class Product(models.Model):
     key_features = models.TextField(blank=True)
     sku = models.CharField(max_length=50, blank=True, null=True)
     model=models.CharField(max_length=100, blank=True, null=True)
-    size = models.CharField(max_length=100, blank=True, null=True)
+    size_of_package = models.CharField(
+        max_length=100, blank=True, null=True, choices=SIZE_CHOICES, default='S')
+    product_size = models.CharField(
+        max_length=100, blank=True, null=True,choices=SIZE_CHOICES, default='S')
     weight = models.DecimalField(
         max_digits=10, decimal_places=2,verbose_name='Weight (kg)',blank=True, null=True)
     main_material = models.CharField(max_length=100, blank=True, null=True)
@@ -186,3 +199,53 @@ class Review(models.Model):
     def get_absolute_url(self):
         return reverse('shop:product_detail',
                        args=[self.product.id, self.product.slug])
+
+
+
+
+class Coupon(models.Model):
+    user=models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='Vouchers',
+        null=True, blank=True)
+    coupon_code = models.CharField(max_length=50, unique=True)
+    valid_from = models.DateTimeField()
+    valid_to = models.DateTimeField()
+    value=models.IntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+    num_available = models.IntegerField(default=1)
+    num_used = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.coupon_code
+    
+
+    def can_use(self):
+        is_active = True
+
+        if self.num_available <= self.num_used:
+            is_active = False
+
+        if self.valid_from > timezone.now():
+            is_active = False
+
+        if self.valid_to < timezone.now():
+            is_active = False
+
+        if self.is_active == False:
+            is_active = False
+
+        if self.num_used >= self.num_available and self.num_available != 0:
+            is_active = False
+
+        return is_active
+
+    def use(self):
+        self.num_used = self.num_used + 1
+        if self.num_used >= self.num_available and self.num_available != 0:
+            self.is_active = False
+        self.save()
+    
+    #a method to deactivate a coupon if it has been used
+    def deactivate(self):
+        self.is_active = False
+        self.save()

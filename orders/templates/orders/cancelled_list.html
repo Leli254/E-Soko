@@ -24,7 +24,7 @@ Orders List
       {{ object.order_status }}
       <h6 class="card-subtitle mb-2 text-muted">On: {{ object.updated }}</h6>
     </p>
-    <strong><a href="{% url 'orders:order_detail' object.id %}" class="card-link">VIEW DETAILS</a></strong> 
+    <strong><a href="{% url 'orders:cancelled_order_detail' object.id %}" class="card-link">VIEW DETAILS</a></strong> 
   </div>
 
 </div>

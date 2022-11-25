@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Product,Vendor,Review
+from .models import Category, Product,Vendor,Review,Coupon
 
 
 @admin.register(Category)
@@ -28,3 +28,12 @@ class ReviewAdmin(admin.ModelAdmin):
     list_display = ['product', 'user', 'rating', 'created', 'updated']
     list_filter = ['created', 'updated']
     list_editable = ['rating']
+
+
+@admin.register(Coupon)
+class CouponAdmin(admin.ModelAdmin):
+    list_display = [
+        'user','coupon_code', 'valid_from',
+        'valid_to', 'value', 'is_active', 'num_available', 'num_used']
+    list_filter = ['is_active', 'valid_from', 'valid_to']
+    search_fields = ['code']

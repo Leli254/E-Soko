@@ -1,10 +1,12 @@
 import uuid
+
 from django.db import models
 from django.utils.text import slugify
 from django.utils.crypto import get_random_string
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
+from django.urls import reverse
 
 from .managers import UserManager
 
@@ -14,6 +16,19 @@ GENDER_CHOICES = (
     ('female','Female'),
     ('other', 'Other'))
 
+REGIONS = (
+        ('Nairobi',(
+            ('Nairobi Central','Nairobi Central'),
+            ('Nairobi CBD','Nairobi CBD'),
+            ),
+            ),
+        ('Nakuru',(
+            ('Nakuru Central','Nakuru Central'),
+            ('Nakuru CBD','Nakuru CBD'),
+            ),
+        ),
+    )
+#a function to calclute shipping cost depending on the size of the order,and region
 
 
 class User(AbstractUser):
@@ -55,60 +70,32 @@ class User(AbstractUser):
     
 
 
-
-class County(models.Model):
-    name = models.CharField(max_length=50)
-    slug = models.SlugField(max_length=50, unique=True, blank=True)
-
-    class Meta:
-        verbose_name_plural='Counties'
-
-    def save(self, *args, **kwargs):
-        self.slug = slugify(self.name)
-        super(County, self).save(*args, **kwargs)
-
-    def __str__(self):
-        return self.name
-
-class Town(models.Model):
-    name = models.CharField(max_length=50)
-    county = models.ForeignKey(County, on_delete=models.CASCADE)
-    slug = models.SlugField(max_length=50, unique=True, blank=True)
-
-
-    class Meta:
-        verbose_name_plural = "Towns / Cities"
-
-
-    def save(self, *args, **kwargs):
-        self.slug = slugify(self.name)
-        super(Town, self).save(*args, **kwargs)
-
-    def __str__(self):
-        return self.name
-
-
 class Address(models.Model):
+    """Address model."""
     user=models.ForeignKey(
         settings.AUTH_USER_MODEL,on_delete=models.CASCADE
         )
-    full_name=models.CharField(max_length=100)
-    post_code=models.CharField(max_length=100)
-    address_line=models.CharField(max_length=100)
-    address_line2=models.CharField(max_length=100)
-    town_city=models.ForeignKey(
-        Town,on_delete=models.CASCADE,
-        related_name='town_city',null=True,blank=True)
-    delivery_instructions=models.CharField(max_length=100)
+    address_name=models.CharField(max_length=100,verbose_name='Address Name',default='')
+    region=models.CharField(max_length=200,choices=REGIONS,default='Nairobi')
+    phone_number=models.CharField(max_length=20,verbose_name='Phone Number',default='')
+    additional_phone_number=models.CharField(
+        max_length=20,verbose_name='Additional Phone Number',blank=True,null=True)
+    delivery_instructions=models.CharField(
+        max_length=100,blank=True,null=True,
+        verbose_name='Delivery Instructions |Additional Information')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    default_address=models.BooleanField(default=False)
+    default_address=models.BooleanField(default=True)
 
     class Meta:
         verbose_name = _("Address")
         verbose_name_plural = _("Addresses")
 
+    def __str__(self):
+        return self.address_name
 
+    
+   #a method to prevent more than one default address
     def save(self, *args, **kwargs):
         if self.default_address:
             try:
@@ -120,15 +107,14 @@ class Address(models.Model):
                 pass
         super(Address, self).save(*args, **kwargs)
 
-    
-    def __str__(self):
-        return self.full_name
+
+
 
 class PickupStation(models.Model):
     name=models.CharField(max_length=100)
     address=models.CharField(max_length=100)
     phone_number=models.CharField(max_length=100)
-    town=models.ForeignKey(Town,on_delete=models.CASCADE)
+    region=models.CharField(max_length=200,choices=REGIONS,default='Nairobi')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     default_station=models.BooleanField(default=False)
@@ -138,15 +124,12 @@ class PickupStation(models.Model):
         verbose_name = _("Pickup Station")
         verbose_name_plural = _("Pickup Stations")
     
-    def save(self, *args, **kwargs):
-        if self.default_station:
-            try:
-                temp = PickupStation.objects.get(default_station=True)
-                if self != temp:
-                    temp.default_station = False
-                    temp.save()
-            except PickupStation.DoesNotExist:
-                pass
-        super(PickupStation, self).save(*args, **kwargs)
+    
+
+    def __str__(self):
+        return self.name
+
+    def  get_absolute_url(self):
+        return reverse('pickupstation_detail', kwargs={'pk': self.pk})
     
     

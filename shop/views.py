@@ -8,7 +8,7 @@ from django.views.generic import (
 
 
 from cart.forms import CartAddProductForm
-from .models import Category, Product
+from .models import Category, Product,Coupon
 from .forms import VendorForm,ReviewForm
 
 
@@ -117,3 +117,14 @@ class ReviewUpdateView(LoginRequiredMixin, UpdateView):
         kwargs = super().get_form_kwargs()
         kwargs['product'] = Product.objects.get(id=self.kwargs['pk'])
         return kwargs
+
+
+class CouponListView(LoginRequiredMixin,TemplateView):
+    template_name = 'shop/coupon/list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['active_coupons']=Coupon.objects.filter(user=self.request.user,is_active=True)
+        context['inactive_coupons']=Coupon.objects.filter(user=self.request.user,is_active=False)
+        return context
+    

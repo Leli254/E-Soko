@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}
+Order Details
+{% endblock %}
+{% block content %}
+
+<h4>
+    <a href="{% url 'orders:my_orders' %}"><i class="fa fa-angle-left mr-2"></i></a>
+    Order Details
+</h4>
+<hr>
+<div class="card mb-3">
+  <div class="card-body">
+    <h6 class="card-title">Order No:&nbsp;  {{ object.order_number}}</h6>
+    <p>Placed on {{ object.created|date:"d-M-Y" }}</p>
+    <p>Total: Ksh {{ object.get_total_cost }}</p>
+    <hr>
+   <p>ITEMS IN YOUR ORDER</p>
+   <div class="card mb-3">
+    <div class="card-body">
+        <p class ="text-muted">
+        <span class="badge badge-success">{{ object.order_status }}</span> &nbsp;
+        On: {{ object.updated|date:"d-M-Y"  }}</p>
+        <p class ="text-muted">
+           {% if object.returnable %}
+            Maybe eligible to return/refund  until ({{object.get_returnable_deadline}}) &nbsp;
+            <a href="{% url 'return_policy' %}"class="btn btn-sm btn-outline-primary">See Our Return Policy</a>
+            {% else %} 
+            The return/refundable period ended on ({{object.get_returnable_deadline}}) &nbsp;
+            <a href="{% url 'return_policy' %}"class="btn btn-sm btn-outline-primary">See Our Return Policy</a>
+            {% endif %}
+        </p>
+        <hr>
+        {% for item in object.items.all %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">
+                    {{item.product.name}}
+                </h5>
+                <img  style="width:100px;height:80px;" src="{% if item.product.thumb_nail %}{{ item.product.image.url }}{% else %}{% static 'img/no_image.png' %}{% endif %}" >
+                <br>
+                <br>
+                <p class="card-text">QTY: {{ item.quantity }}</p>
+                <p class="card-text">Product Price: {{ item.product.price }}</p>
+                <p align="left">
+                  <a href="{% url 'cart:cart_add_single_item' item.product.id %}"class="btn  btn-warning">BUY AGAIN</a>
+
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+        <div class="row">
+            <div class="col-sm-6">
+              <div class="card">
+                <div class="card-body">
+                  <p class="card-title">PAYMENT INFORMATION</p>
+                  <hr>
+                <strong><h7 class="card-text">Payment Method</h7></strong><br>
+               <p class="card-text">
+                {{order.payment_method}} <br>
+              </p>
+                <strong><h7 class="card-text">Payment Details</h7></strong><br>
+                {% if order.paid %}
+                <p class="card-text">
+                Paid KSH: {{order.get_total_cost}} on {{order.updated|date:"d-M-Y"}} via {{order.payment_method}}
+                <br>
+                </p>
+                {% else %}
+                <p class="card-text">
+               To pay KSH: {{order.get_total_cost}} via {{order.payment_method}}
+               <br>
+                </p>
+                {% endif %}
+                
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="card">
+                <div class="card-body">
+                  <p class="card-title">DELIVERLY INFORMATION</p>
+                  <hr>
+                <strong><h7 class="card-text">Delivery Method</h7></strong><br>
+                {{ object.delivery_method }}<br>
+                <strong><h7 class="card-text">Shipping Address</h7></strong><br>
+                {% if object.address %}
+                {{ object.address}}<br>
+                Town/City: {{ object.address.town_city}}<br>
+                {% else %}
+                {{object.pickup_station}}<br>
+
+                {% endif %}
+                <strong><h7 class="card-text">Shipping Details</h7></strong><br>
+                <p class="card-text">
+                  {{ object.delivery_method }}.
+                  Fulfilled by  {{ object.shipping_company }}
+                  on {{ object.updated|date:"d-M-Y"  }}
+                </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+    </div>
+
+   </div>
+  </div>
+  <p align="center">
+  <a href="{% url 'help' %}" class="btn btn-primary">NEED HELP?</a></p>
+</div>
+
+<br>
+{% include "shop/product/recommended.html" %}
+<br>
+{%include "shop/product/recently_viewed.html" %}
+
+{% endblock %}

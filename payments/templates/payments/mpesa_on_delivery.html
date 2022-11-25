@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}
+Mpesa on Delivery
+{% endblock %}
+{% block content %}
+<div  class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <h4>Pay with Mpesa on Delivery / Pickup</h4>
+            <hr>
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h6 class="card-title">Order Number: {{order.order_number}}</h6>
+                    <p class="card-text">Ordered On: {{order.created|date:"d-M-Y"}}</p>
+                    <br>
+                    <p align="center">ITEMS IN THIS ORDER</p>
+                    <hr>
+                    <br>
+                    {% for item in object.items.all %}
+                    <h5 class="card-title">{{item.product.name}}</h5>
+                   <p>
+                    <img  style="width:50px;height:60px;" src="{% if item.product.thumb_nail %}{{ item.product.image.url }}{% else %}{% static 'img/no_image.png' %}{% endif %}" >
+                    &nbsp;&nbsp;&nbsp;
+                    QTY: {{ item.quantity }} &nbsp;&nbsp;
+                   Price  KSH: {{ item.product.price }}
+                   </p>
+                    {% endfor %}
+                </div>
+                       <hr>
+                     <strong><P align="center">Order Total KSH:  {{order.get_total_cost}}</p></strong>
+                        <br>
+                        <br>
+            </div>
+            <p align="center">HOW TO PAY WITH MPESA ON DELIVERLY / PICKUP</p>
+                        <p>
+                        You can pay before delivery or pickup, or
+                        Pay during delivery or pickup.
+                        Please make your payment directly into our Mpesa Paybill account.
+                        Use your Order Number as the Account Number.
+                       </p>
+                       <br>
+                        <b><p>Go to LIPA NA MPESA</p></b>
+                        <b><p>Go to Paybill</p></b>
+                        <b><p>Business Number: 000000</p></b>
+                        <b><p>Account Number: {{order.order_number}}</p></b>
+                        <b><p>Amount in KSH:  {{order.get_total_cost}}</p></b>
+                        <br>
+                        <p align="center">
+                            <a href="{% url 'contact' %}" class="btn btn-primary">NEED HELP PAYING?</a></p>
+        </div>
+    </div>
+</div>
+
+<br>
+{% include "shop/product/recommended.html" %}
+<br>
+{%include "shop/product/recently_viewed.html" %}
+
+{% endblock %}

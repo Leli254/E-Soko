@@ -5,7 +5,7 @@ from django.urls import path, include
 from django.views.generic import TemplateView
 
 
-from commons.views import ContactView
+from commons import views as common_views
 
 
 urlpatterns = [
@@ -16,11 +16,12 @@ urlpatterns = [
     path('accounts/profile/', TemplateView.as_view(template_name='support.html'),name='support'),
     path('help/',TemplateView.as_view(template_name='help.html'),name='help'),
     path('faqs/',TemplateView.as_view(template_name='faqs.html'),name='faqs'),
-    path('contact/',ContactView.as_view(),name='contact'),
+    #common urls
+    path('contact/',common_views.ContactView.as_view(),name='contact'),
+    path('return-policy/',common_views.ReturnPolicyView.as_view(),name='return_policy'),
     path('cart/', include('cart.urls',namespace='cart')),
     path('orders/', include('orders.urls',namespace='orders')),
     path('payment/', include('payments.urls', namespace='payment')),
-    path('coupons/', include('coupons.urls', namespace='coupons')),
     path('', include('shop.urls')),
 ]
 

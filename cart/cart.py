@@ -2,7 +2,6 @@ from decimal import Decimal
 from django.conf import settings
 
 from shop.models import Product
-from coupons.models import Coupon
 
 
 class Cart:
@@ -76,6 +75,7 @@ class Cart:
     def get_total_price(self):
         return sum(Decimal(item['price']) * item['quantity'] for item in self.cart.values())
 
+    '''
     @property
     def coupon(self):
         if self.coupon_id:
@@ -90,3 +90,4 @@ class Cart:
 
     def get_total_price_after_discount(self):
         return self.get_total_price() - self.get_discount()
+    '''

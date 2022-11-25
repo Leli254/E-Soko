@@ -10,15 +10,16 @@ from django.conf import settings
 from django.db.transaction import atomic, non_atomic_requests
 from django.http import HttpResponse ,HttpResponseForbidden ,JsonResponse
 from django.views import View
-from django.views.generic import CreateView,DetailView,TemplateView,UpdateView
+from django.views.generic import DetailView,TemplateView,FormView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import IntegrityError
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.utils.decorators import method_decorator
-from django.shortcuts import render, redirect,reverse,get_object_or_404
+from django.shortcuts import render, redirect,get_object_or_404
 from django.utils import timezone
-
-
+from django.contrib import messages
+from django.urls import reverse
 
 from orders.models import Order
 from . mpesa import MpesaAccessToken,LipaNaMpesaPassword
@@ -37,49 +38,30 @@ def getAccessToken(request):
 
     return HttpResponse(validated_mpesa_access_token)
 
-#choose payment method view
-class PaymentTypeView(TemplateView):
-    template_name= 'payments/payment_type.html'
+ 
 
-
-   
-def get_mpesa_number(request):
-    order_id = request.session.get('order_id', None)
-    order = get_object_or_404(Order, id=order_id)
-
-
-    if request.method == 'POST':
-        
-        form = MpesaNumberForm(request.POST)
-        if form.is_valid():
-            phone_number = form.cleaned_data['phone_number']
-            request.session['phone_number'] = phone_number
-            return redirect(reverse('payment:lipa_na_mpesa'))
-    else:
-        form = MpesaNumberForm()
-    return render(request, 'payments/mpesa_number.html', {'form': form})
-
-
-#write above code as a class based view
-class MpesaNumberView(CreateView):
+class MpesaNumberView(LoginRequiredMixin,FormView):
+    '''
+    a view that renders a form for the user to enter their  mpesa phone number,
+    during checkout
+    '''
     form_class = MpesaNumberForm
     template_name = 'payments/mpesa_number.html'
 
     def form_valid(self, form):
         phone_number = form.cleaned_data['phone_number']
         self.request.session['phone_number'] = phone_number
-        return redirect(reverse('payment:lipa_na_mpesa'))
+        return super().form_valid(form)
 
-    #get the order id from the session, get the order object and pass it to the template
+    def get_success_url(self):
+        return reverse('payment:lipa_na_mpesa')
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         order_id = self.request.session.get('order_id', None)
         order = get_object_or_404(Order, id=order_id)
         context['order'] = order
         return context
-
-    def get_success_url(self):
-        return reverse('payment:lipa_na_mpesa')
 
 
 
@@ -153,14 +135,7 @@ class MpesaStkPushCallbackView(View):
         return JsonResponse({"ResultCode": 0, "ResultDesc": "Success", "ThirdPartyTransID": 0})
 
 
-def payment_completed(request):
-    return render(request, 'payments/completed.html')
 
-
-def payment_canceled(request):
-    return render(request, 'payments/canceled.html')
-
-      
 
 @csrf_exempt
 def register_urls(request):
@@ -222,13 +197,6 @@ def confirmation(request):
 
 '''
 
-
-def payment_completed(request):
-    return render(request, 'payments/completed.html')
-
-
-def payment_canceled(request):
-    return render(request, 'payments/canceled.html')
 
 #for testing purposes
 def lipa_na_mpesa_online(request):
@@ -298,3 +266,100 @@ def stripe_payment_process(request):
     else:
         return render(request, 'payments/stripe_process.html', locals())
 
+
+
+class PayviaMpesaonDeliveryView(DetailView):
+    template_name = 'payments/mpesa_on_delivery.html'
+
+    def get_object(self):
+        order_id = self.request.session['order_id']
+        order = Order.objects.get(id=order_id)
+        return order
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        order_id = self.request.session.get('order_id', None)
+        order = get_object_or_404(Order, id=order_id)
+        context['order'] = order
+        return context
+
+
+
+class BankTransferView(DetailView):
+    template_name = 'payments/bank_transfer.html'
+
+    def get_object(self):
+        order_id = self.request.session['order_id']
+        order = Order.objects.get(id=order_id)
+        return order
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        order_id = self.request.session.get('order_id', None)
+        order = get_object_or_404(Order, id=order_id)
+        context['order'] = order
+        return context
+
+    
+
+class PaymentCompletedView(LoginRequiredMixin,TemplateView):
+    template_name = 'payments/completed.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        order_id = self.request.session.get('order_id', None)
+        order = get_object_or_404(Order, id=order_id)
+        context['order'] = order
+        return context
+
+    def get(self, request, *args, **kwargs):
+        if 'order_id' in request.session:
+            del request.session['order_id']
+        return super().get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        if 'order_id' in request.session:
+            del request.session['order_id']
+        return super().post(request, *args, **kwargs)
+
+    def dispatch(self, request, *args, **kwargs):
+        if 'order_id' not in request.session:
+            messages.error(request, 'You have no orders')
+            return redirect(reverse('orders:order_list'))
+        return super().dispatch(request, *args, **kwargs)
+    
+    def get_success_url(self):
+        return reverse('orders:order_list')
+
+        
+class PaymentCancelledView(LoginRequiredMixin,TemplateView):
+    template_name = 'payments/cancelled.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        order_id = self.request.session.get('order_id', None)
+        order = get_object_or_404(Order, id=order_id)
+        context['order'] = order
+        return context
+
+    def get(self, request, *args, **kwargs):
+        if 'order_id' in request.session:
+            del request.session['order_id']
+        return super().get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        if 'order_id' in request.session:
+            del request.session['order_id']
+        return super().post(request, *args, **kwargs)
+
+    def dispatch(self, request, *args, **kwargs):
+        if 'order_id' not in request.session:
+            messages.error(request, 'You have no orders')
+            return redirect(reverse('orders:order_list'))
+        return super().dispatch(request, *args, **kwargs)
+    
+    def get_success_url(self):
+        return reverse('orders:order_list')
+      
