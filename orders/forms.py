@@ -3,8 +3,17 @@ from django.utils.translation import gettext_lazy as _
 from .models import Order
 from users.models import Address,PickupStation
 from shop.models import Coupon
-#import request user below
 from django.contrib.auth import get_user_model
+
+
+
+#form to choose delivery method
+class  DeliveryMethodForm(forms.Form):
+    delivery_method = forms.ChoiceField(
+        choices=[('home_delivery', 'Home Delivery'), ('pickup_station', 'Pick Up Station')],
+        widget=forms.RadioSelect,
+        label=_('Delivery Method')
+    )
 
 
 

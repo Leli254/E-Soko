@@ -1,7 +1,7 @@
 from io import BytesIO
 from xhtml2pdf import pisa
 
-from django.views.generic import CreateView,DetailView,ListView
+from django.views.generic import CreateView,DetailView,ListView,FormView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy 
 from django.http import HttpResponse
@@ -14,6 +14,17 @@ from .forms import OrderCreateForm
 from .tasks import order_created
 
 
+#a view to choose Delivery method(Home Delivery or Pick Up station)
+class DeliveryMethodView(LoginRequiredMixin,FormView):
+    template_name = 'orders/delivery_method.html'
+    form_class = DeliveryMethodForm
+    success_url = reverse_lazy('orders:order_create')
+
+    def form_valid(self, form):
+        delivery_method = form.cleaned_data['delivery_method']
+        self.request.session['delivery_method'] = delivery_method
+        return super().form_valid(form)
+    
 class OrderCreateView(LoginRequiredMixin,CreateView):
     model = Order
     form_class = OrderCreateForm
