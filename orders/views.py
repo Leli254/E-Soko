@@ -19,7 +19,7 @@ class OrderCreateView(LoginRequiredMixin,CreateView):
     form_class = OrderCreateForm
     template_name = 'orders/create.html'
     success_url = reverse_lazy('payment:payment_type')
-    login_url = reverse_lazy('users:login')
+    
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()

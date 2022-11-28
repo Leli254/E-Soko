@@ -182,10 +182,17 @@ class ProductImage(models.Model):
 
 
 class Review(models.Model):
+    rate_choices=(
+        (1,1),
+        (2,2),
+        (3,3),
+        (4,4),
+        (5,5),
+        )
     product=models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews')
     user=models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='reviews')
-    rating=models.IntegerField()
+    rating=models.IntegerField(choices=rate_choices)
     comment=models.TextField(null=True, blank=True)
     created=models.DateTimeField(auto_now_add=True)
     updated=models.DateTimeField(auto_now=True)
@@ -249,3 +256,22 @@ class Coupon(models.Model):
     def deactivate(self):
         self.is_active = False
         self.save()
+
+
+class Wishlist(models.Model):
+    user=models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='wishlists')
+    product=models.ForeignKey(Product, on_delete=models.CASCADE, related_name='wishlists')
+    slug=models.SlugField(max_length=200,blank=True,null=True)
+    created=models.DateTimeField(auto_now_add=True)
+    updated=models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering=['-created']
+
+    def __str__(self):
+        return f'{self.product.name} in {self.user.email} wishlist'
+
+    def get_absolute_url(self):
+        return reverse('shop:product_detail',
+                       args=[self.product.id, self.product.slug])

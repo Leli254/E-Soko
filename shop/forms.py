@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Vendor,Review
+from .models import Vendor,Review,Wishlist
 
 
 class VendorForm(forms.ModelForm):
@@ -72,3 +72,27 @@ class ReviewForm(forms.ModelForm):
         if not comment:
             raise forms.ValidationError('This field is required')
         return comment
+
+
+#a form for adding a product to wishlist
+class WishlistForm(forms.ModelForm):
+    class Meta:
+        model = Wishlist
+        fields = ('product', 'user')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['product'].widget.attrs.update({'class': 'form-control'})
+        self.fields['user'].widget.attrs.update({'class': 'form-control'})
+
+    def clean_product(self):
+        product = self.cleaned_data.get('product')
+        if not product:
+            raise forms.ValidationError('This field is required')
+        return product
+
+    def clean_user(self):
+        user = self.cleaned_data.get('user')
+        if not user:
+            raise forms.ValidationError('This field is required')
+        return user

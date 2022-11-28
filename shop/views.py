@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import (
@@ -8,7 +8,7 @@ from django.views.generic import (
 
 
 from cart.forms import CartAddProductForm
-from .models import Category, Product,Coupon
+from .models import Category, Product,Coupon,Wishlist
 from .forms import VendorForm,ReviewForm
 
 
@@ -127,4 +127,44 @@ class CouponListView(LoginRequiredMixin,TemplateView):
         context['active_coupons']=Coupon.objects.filter(user=self.request.user,is_active=True)
         context['inactive_coupons']=Coupon.objects.filter(user=self.request.user,is_active=False)
         return context
-    
+
+
+#a view to  add a product to  wishlist
+class AddToWishlistView(LoginRequiredMixin,TemplateView):
+    template_name = 'shop/wishlist/add.html'
+
+    ''' 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['product'] = Product.objects.get(id=self.kwargs['pk'])
+        return context
+    '''
+
+    def post(self, request, *args, **kwargs):
+        product = Product.objects.get(id=self.kwargs['id'])
+        product.wishlist.add(self.request.user)
+        return redirect('shop:product_list')
+
+
+#a view to  remove a product from wishlist
+class RemoveFromWishlistView(LoginRequiredMixin,TemplateView):
+    template_name = 'shop/wishlist/remove.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['product'] = Product.objects.get(id=self.kwargs['pk'])
+        return context
+
+    def post(self, request, *args, **kwargs):
+        product = Product.objects.get(id=self.kwargs['pk'])
+        product.wishlist.remove(self.request.user)
+        return redirect('shop:product_list')
+
+#a view to show wishlist
+class WishlistView(LoginRequiredMixin,TemplateView):
+    template_name = 'shop/wishlist/list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['wishlist']=Wishlist.objects.filter(user=self.request.user)
+        return context
