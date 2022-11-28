@@ -33,7 +33,7 @@ class ReviewAdmin(admin.ModelAdmin):
 @admin.register(Coupon)
 class CouponAdmin(admin.ModelAdmin):
     list_display = [
-        'user','coupon_code', 'valid_from',
+        'coupon_code', 'valid_from',
         'valid_to', 'value', 'is_active', 'num_available', 'num_used']
     list_filter = ['is_active', 'valid_from', 'valid_to']
-    search_fields = ['code']
+    search_fields = ['coupon_code']

@@ -211,9 +211,6 @@ class Review(models.Model):
 
 
 class Coupon(models.Model):
-    user=models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='Vouchers',
-        null=True, blank=True)
     coupon_code = models.CharField(max_length=50, unique=True)
     valid_from = models.DateTimeField()
     valid_to = models.DateTimeField()
