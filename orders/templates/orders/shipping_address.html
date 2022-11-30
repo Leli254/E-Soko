@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+  Checkout
+{% endblock %}
+
+{% block content %}
+
+<style>
+    .button1 {width: 100%;}
+</style>
+
+
+
+<p align="left">CHECKOUT</p>
+
+<div class="container">
+    <div class="row">
+      <div class="col-md-8 card mb-4  mt-3 left  top">
+        <div class="card-body">
+
+            <div class="card mb-5">
+                <div class="card-body">
+                    <p class="card-title">
+                        <i class="fas fa-check-circle style="color:red"></i>
+                        1.HOME | OFFICE ADDRESS DETAILS  
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <a href="{% url 'users:address_list' %}" class="button light">CHANGE</a>
+
+                    </p>
+                    <hr>
+            <b>{{address.user.first_name}} {{address.user.last_name}}</b><br>
+            {{address.address_name}}<br>
+            {{address.phone_number}}
+                </div>
+            </div>
+        
+            <div class="card mb-5">
+                <div class="card-body">
+                    <p class="card-title">2.DELIVERY METHOD</p>
+                    <hr>
+                    <h5>How do you want your order delivered?</h5>
+                    
+
+                    <form method="POST">
+                        {% csrf_token %}
+                        
+                        <div class="form-group">
+                            <select class="form-control" name="shipping_method" onchange="showDiv(this)" inputmode="radio" >
+                                <option  value="Pickup">Dropped at a Pickup Station</option>
+                                <option value="Delivery">Home / Office Delivery</option>
+                            </select>
+                        </div>
+                        <hr>
+                        <div class="form-group" id="hidden_div" >
+                            <p>Select your pickup Station</p>
+                           {{ form.pickup_station }}
+                           </div>
+
+
+
+                        <div class="card mb-5">
+                            <div class="card-body">
+                                <h7 class="card-title">  SHIPMENT DETAILS    </h7>
+                                <hr>
+                                <p>
+                                    <ul>
+                                        {% for item in cart %}
+                                          <li>
+                                            {{ item.quantity }}x {{ item.product.name }}
+                                          </li>
+                                        {% endfor %}
+                                      </ul>
+                                </p>
+                               
+                            </div>
+                        </div>
+
+                        <p class="text-muted">
+                            You will be able to add a voucher in the next step.</p>
+                        <input type="submit"   class="btn button1 btn-primary" value="PROCEED TO NEXT STEP">
+                    </form>
+                </div>
+            </div>
+
+            <div class="card mb-5">
+                <div class="card-body">
+                    <p class="card-title">3.PAYMENT METHOD</p>
+                    <hr>
+                   
+                </div>
+            </div>
+
+
+</div>
+</div>
+{% block sidebar %} {% include 'orders/order_summary_sidebar.html' %} {% endblock sidebar %}
+</div>
+</div>
+
+<script>
+    function showDiv(select){
+       if(select.value=='Pickup'){
+          document.getElementById('hidden_div').style.display = "block";
+       } else{
+          document.getElementById('hidden_div').style.display = "none";
+       }
+    }
+    </script>
+
+{% endblock %}

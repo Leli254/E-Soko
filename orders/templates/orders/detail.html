@@ -84,12 +84,10 @@ Order Details
                 <strong><h7 class="card-text">Delivery Method</h7></strong><br>
                 {{ object.delivery_method }}<br>
                 <strong><h7 class="card-text">Shipping Address</h7></strong><br>
-                {% if object.address %}
-                {{ object.address}}<br>
-                Town/City: {{ object.address.town_city}}<br>
-                {% else %}
+                {% if object.pickup_station %}
                 {{object.pickup_station}}<br>
-
+                {% else %}
+                {{ object.address}}<br>
                 {% endif %}
                 <strong><h7 class="card-text">Shipping Details</h7></strong><br>
                 <p class="card-text">

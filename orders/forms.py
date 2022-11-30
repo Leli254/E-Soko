@@ -5,33 +5,28 @@ from users.models import Address,PickupStation
 from shop.models import Coupon
 from django.contrib.auth import get_user_model
 
-
-
-#form to choose delivery method
-class  DeliveryMethodForm(forms.Form):
-    delivery_method = forms.ChoiceField(
-        choices=[('home_delivery', 'Home Delivery'), ('pickup_station', 'Pick Up Station')],
-        widget=forms.RadioSelect,
-        label=_('Delivery Method')
+#form to select a pickup station
+class PickupStationForm(forms.Form):
+    pickup_station = forms.ModelChoiceField(
+        queryset=PickupStation.objects.all(),
+        required=False,
+        empty_label=_('Select a pickup station'),
     )
 
 
 
+#a form to create an order
 class OrderCreateForm(forms.ModelForm):
 
     class Meta:
         model = Order
-        fields = ['address','pickup_station','coupon','payment_method']
+        fields = ['payment_method', 'coupon']
+        coupon=forms.ModelChoiceField(queryset=Coupon.objects.all(),required=False)
         labels = {
-            'address': _('Address'),
-            'pickup_station': _('Pickup Station'),
             'coupon': _('Coupon'),
             'payment_method': _('Payment Method'),
         }
         widgets = {
-            'address': forms.RadioSelect(),
-            'pickup_station': forms.Select(attrs={'class': 'form-control'}),
-            'coupon': forms.CheckboxSelectMultiple(),
             'payment_method': forms.Select(attrs={'class': 'form-control'}),
         }
 
@@ -39,10 +34,7 @@ class OrderCreateForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request', None)
         super(OrderCreateForm, self).__init__(*args, **kwargs)
-        self.fields['address'].queryset = Address.objects.filter(user=self.request.user)
-        self.fields['pickup_station'].queryset = PickupStation.objects.all()
-        self.fields['coupon'].queryset = Coupon.objects.filter(
-            user=self.request.user,is_active=True).exclude(is_active=False)
+        #self.fields['coupon'].queryset = Coupon.objects.filter(is_active=True).exclude(is_active=False)
           
         
 

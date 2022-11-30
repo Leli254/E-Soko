@@ -35,6 +35,8 @@ class User(AbstractUser):
     """User model."""
 
     username = None
+    first_name=models.CharField(max_length=100, blank=True, null=True)
+    last_name=models.CharField(max_length=100, blank=True, null=True)
     email = models.EmailField(_('email address'), unique=True)
     joindate=models.DateField(auto_now_add=True)
     uuid_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)

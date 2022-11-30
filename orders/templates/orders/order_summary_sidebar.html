@@ -1,0 +1,39 @@
+{% block sidebar %}
+{% load static %}
+
+<style>
+        .card{
+            box-shadow: 0 16px 48px #b3b4b6;
+        }
+       
+</style>
+
+
+<div class="col-md-4 float-right ">
+    <div class="card my-4">
+        <h5 class="card-header">ORDER SUMMARY</h5>
+    <div class="card-body">
+       <p class="card-text">
+          <ul>
+            {% for item in cart %}
+              <li>
+                {{ item.quantity }}x {{ item.product.name }}</p>
+                <p>
+                <img  style="width:100px;height:80px;" src="{% if item.product.thumb_nail %}{{ item.product.image.url }}{% else %}{% static 'img/no_image.png' %}{% endif %}" >
+                </p>
+                <span>KSH {{ item.total_price }}</span>
+              </li>
+            {% endfor %}
+          </ul>
+          <p>Total: KSH {{ cart.get_total_price }}</p>
+          <p align="center">
+          <a href="{% url 'cart:cart_detail' %}" class="btn btn-primary">MODIFY CART</a>
+          </p>
+    </div>
+</div>
+</div>
+
+
+
+  
+  {% endblock sidebar %}

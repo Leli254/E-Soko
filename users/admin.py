@@ -26,6 +26,9 @@ class UserAdmin(DjangoUserAdmin):
     ordering = ('email','first_name',)
 
 
+
+
+
 class AddressAdmin(admin.ModelAdmin):
     list_display =  ['user','address_name','phone_number','additional_phone_number',]
     search_fields = ['user','address_name','phone_number','additional_phone_number',]

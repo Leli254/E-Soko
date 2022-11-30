@@ -70,8 +70,7 @@ class Order(models.Model):
     pickup_station = models.ForeignKey(
         PickupStation, on_delete=models.CASCADE, null=True, blank=True)
     order_number = models.CharField(max_length=9, blank=True, null=True, unique=True)
-    coupon=models.ForeignKey(
-        Coupon,related_name='Vouchers',null=True,blank=True,on_delete=models.SET_NULL)
+    coupon=models.ForeignKey(Coupon, on_delete=models.SET_NULL, null=True, blank=True)
     order_status=models.CharField(
         max_length=50, choices=ORDER_STATUS, default='pending')
     created = models.DateTimeField(auto_now_add=True)
@@ -206,7 +205,10 @@ class Order(models.Model):
     def delivery_method(self):
         if self.pickup_station:
             return 'Pickup Station'
-        return 'Door Delivery'
+        elif self.pickup_station is None:
+            return 'Door Delivery'
+        return  'Door Delivery'
+
 
     #method to check shipping company,if None return Esoko Express Delivery
     def shipping_company(self):

@@ -1,29 +1,47 @@
 from io import BytesIO
 from xhtml2pdf import pisa
 
-from django.views.generic import CreateView,DetailView,ListView,FormView
+from django.views.generic import CreateView,DetailView,ListView,FormView,TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy 
 from django.http import HttpResponse
 from django.template.loader import get_template
 
 from cart.cart import Cart
+from users.models import Address,PickupStation
 
 from .models import OrderItem,Order
-from .forms import OrderCreateForm
+from .forms import OrderCreateForm,  PickupStationForm
 from .tasks import order_created
 
 
-#a view to choose Delivery method(Home Delivery or Pick Up station)
-class DeliveryMethodView(LoginRequiredMixin,FormView):
-    template_name = 'orders/delivery_method.html'
-    form_class = DeliveryMethodForm
+class ConfirmShippingAddressView(LoginRequiredMixin,FormView):
+    template_name = 'orders/shipping_address.html'
+    form_class =  PickupStationForm
     success_url = reverse_lazy('orders:order_create')
 
     def form_valid(self, form):
-        delivery_method = form.cleaned_data['delivery_method']
-        self.request.session['delivery_method'] = delivery_method
+        pickup_station = form.cleaned_data['pickup_station']
+        self.request.session['pickup_station'] = pickup_station.id if pickup_station else None
         return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['cart'] = Cart(self.request)
+        context['address'] = Address.objects.filter(user=self.request.user).first()
+        return context
+
+
+#a view to show cart items 
+class OrderSummaryView(LoginRequiredMixin,TemplateView):
+    template_name = 'orders/order_summary_sidebar.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['cart'] = Cart(self.request)
+        return context
+
+
     
 class OrderCreateView(LoginRequiredMixin,CreateView):
     model = Order
@@ -45,6 +63,10 @@ class OrderCreateView(LoginRequiredMixin,CreateView):
     def form_valid(self, form):
         order = form.save(commit=False)
         order.user = self.request.user
+        order.address = Address.objects.filter(user=self.request.user).first()
+        pickup_station_id = self.request.session.get('pickup_station')
+        if pickup_station_id:
+            order.pickup_station = PickupStation.objects.get(id=pickup_station_id)
         cart = Cart(self.request)
         order.save()
         
