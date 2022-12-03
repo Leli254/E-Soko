@@ -107,45 +107,4 @@ class OrderListView(LoginRequiredMixin,ListView):
     context_object_name = 'orders'
 
     def get_queryset(self):
-        return Order.objects.filter(user=self.request.user).exclude(order_status='cancelled')
-
-
-class OrderDetailView(LoginRequiredMixin,DetailView):
-    model=Order
-    template_name='orders/detail.html'
-    context_object_name='order'
-
-
-class CancelledOrderListView(LoginRequiredMixin,ListView):
-    '''
-    a view to display a list of all cancelled orders
-    '''
-    model = Order
-    template_name = 'orders/cancelled_list.html'
-    context_object_name = 'orders'
-
-    def get_queryset(self):
-        return Order.objects.filter(user=self.request.user,order_status='cancelled')
-
-
-class CancelledOrderDetailView(LoginRequiredMixin,DetailView):
-    '''
-    a view to display details of a cancelled order
-    '''
-    model = Order
-    template_name = 'orders/cancelled_detail.html'
-    context_object_name = 'order'
-
-
-
-def render_to_pdf(template_src, context_dict={}):
-    template = get_template(template_src)
-    html  = template
-    result = BytesIO()
-    pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
-    if not pdf.err:
-        return HttpResponse(result.getvalue(), content_type='application/pdf')
-    return None
-
-
-
+        return Order.objects.filter(user=self.request.user)
