@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Product,Vendor,Review,Coupon
+from .models import Category, Product,Vendor,Review,Coupon,Wishlist
 
 
 @admin.register(Category)
@@ -37,3 +37,10 @@ class CouponAdmin(admin.ModelAdmin):
         'valid_to', 'value', 'is_active', 'num_available', 'num_used']
     list_filter = ['is_active', 'valid_from', 'valid_to']
     search_fields = ['coupon_code']
+
+
+@admin.register(Wishlist)
+class WishlistAdmin(admin.ModelAdmin):
+    list_display = ['user', 'product', 'slug', 'created', 'updated']
+    list_filter = ['created', 'updated']
+    prepopulated_fields = {'slug': ('product',)}

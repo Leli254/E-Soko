@@ -136,6 +136,33 @@ class MpesaStkPushCallbackView(View):
 
 
 
+@csrf_exempt
+def mpesa_webhook(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        #get post data from safaricom and save it to the database
+        MpesaPayment.objects.create(
+            MerchantRequestID=data['MerchantRequestID'],
+            CheckoutRequestID=data['CheckoutRequestID'],
+            ResultCode=data['ResultCode'],
+            ResultDesc=data['ResultDesc'],
+            Amount=data['CallbackMetadata']['Item'][0]['Value'],
+            MpesaReceiptNumber=data['CallbackMetadata']['Item'][1]['Value'],
+            Balance=data['CallbackMetadata']['Item'][2]['Value'],
+            TransactionDate=data['CallbackMetadata']['Item'][3]['Value'],
+            PhoneNumber=data['CallbackMetadata']['Item'][4]['Value'],
+        )
+        #get the order id from the session,and get the order object,then set the order to paid
+        order_id = request.session['order_id']
+        order = get_object_or_404(Order, id=order_id)
+        order.paid = True
+        order.save()
+
+        return HttpResponse('success')
+    else:
+        return HttpResponse('error')
+
+
 
 @csrf_exempt
 def register_urls(request):
@@ -165,59 +192,6 @@ def validation(request):
     }
     return JsonResponse(dict(context))
 
-
-'''
-def confirmation(request):
-    response=lipa_na_mpesa(request)
-
-    mpesa_body =request.body.decode('utf-8')
-    mpesa_payment = json.loads(mpesa_body)
-    mpesa_payment=json.loads(request.body)
-
-    payment = MpesaPayment(
-        first_name=mpesa_payment['FirstName'],
-        last_name=mpesa_payment['LastName'],
-        middle_name=mpesa_payment['MiddleName'],
-        description=mpesa_payment['TransID'],
-        phone_number=mpesa_payment['MSISDN'],
-        amount=mpesa_payment['TransAmount'],
-        reference=mpesa_payment['BillRefNumber'],
-        organization_balance=mpesa_payment['OrgAccountBalance'],
-        type=mpesa_payment['TransactionType'],
-
-    )
-    payment.save()
-
-    context = {
-        "ResultCode": 0,
-        "ResultDesc": "Accepted"
-    }
-
-    return JsonResponse(dict(context))
-
-'''
-
-
-#for testing purposes
-def lipa_na_mpesa_online(request):
-    access_token = MpesaAccessToken.validated_mpesa_access_token
-    api_url = "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest"
-    headers = {"Authorization": "Bearer %s" % access_token}
-    request = {
-        "BusinessShortCode": LipaNaMpesaPassword.Business_short_code,
-        "Password": LipaNaMpesaPassword.decode_password,
-        "Timestamp": LipaNaMpesaPassword.lipa_time,
-        "TransactionType": "CustomerPayBillOnline",
-        "Amount": 1,
-        "PartyA": 254712320768,  # replace with your phone number to get stk push
-        "PartyB": LipaNaMpesaPassword.Business_short_code,
-        "PhoneNumber": 254712320768,  # replace with your phone number to get stk push
-        "CallBackURL": "https://sandbox.safaricom.co.ke/mpesa/",
-        "AccountReference": "Soko",
-        "TransactionDesc": "Testing stk push"
-    }
-    response = requests.post(api_url, json=request, headers=headers)
-    return HttpResponse('success')
 
 #Handle payment process using Stripe
 

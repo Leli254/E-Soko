@@ -6,61 +6,112 @@
 {% endblock %}
 
 {% block content %}
-  <h1>Your shopping cart</h1>
-  <table class="cart">
-    <thead>
-      <tr>
-        <th>Image</th>
-        <th>Product</th>
-        <th>Quantity</th>
-        <th>Remove</th>
-        <th>Unit price</th>
-        <th>Price</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for item in cart %}
-        {% with product=item.product %}
-          <tr>
-            <td>
-              <a href="{{ product.get_absolute_url }}">
-                <img src="{% if product.image %}{{ product.image.url }}
-                {% else %}{% static "img/no_image.png" %}{% endif %}">
-              </a>
-            </td>
-            <td>{{ product.name }}</td>
-            <td>
-              <form action="{% url "cart:cart_add" product.id %}" method="post">
-                {{ item.update_quantity_form.quantity }}
-                {{ item.update_quantity_form.override }}
-                <input type="submit" value="Update">
-                {% csrf_token %}
-              </form>
-            </td>
-            <td>
-              <form action="{% url "cart:cart_remove" product.id %}" method="post">
-                <input type="submit" value="Remove">
-                {% csrf_token %}
-              </form>
-            </td>
-            <td class="num">KSH {{ item.price }}</td>
-            <td class="num">KSH {{ item.total_price }}</td>
-          </tr>
-        {% endwith %}
-      {% endfor %}
-      <tr class="total">
-        <td>Total</td>
-        <td colspan="4"></td>
-        <td class="num">KSH {{ cart.get_total_price }}</td>
-      </tr>
-    </tbody>
-  </table>
-  <p class="text-right">
-    <a href="{% url 'shop:product_list' %}" class="button
-    light">Continue shopping</a>
-    <a href="{% url 'orders:delivery_method' %}" class="button dark">Checkout</a>
 
-  </p>
 
+
+
+
+<style>
+
+.flex {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+}
+
+.flex-child {
+    -webkit-box-flex: 1 1 auto;
+    -moz-box-flex:  1 1 auto;
+    -webkit-flex:  1 1 auto;
+    -ms-flex:  1 1 auto;
+    flex:  1 1 auto;
+}
+  .button {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 16px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    margin: 4px 2px;
+    transition-duration: 0.4s;
+    cursor: pointer;
+  }
+  
+  .button1 {
+    background-color: white; 
+    color: rgb(231, 157, 157);
+    border-radius: 12px;
+    
+   
+  }
+  
+  .button1:hover {
+    background-color: #d68ba8;
+    color: white;
+  }
+</style>  
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-8 card mb-4  mt-3 left  top">
+      <div class="card-body">
+        <h5 class="card-title">CART</h5>
+        
+  
+          <div class="card mb-5">
+              <div class="card-body">
+                {% for item in cart %}
+                {% with product=item.product %}
+                <hr>
+                
+                 <b> <p class="card-title">{{ product.name }} &nbsp;&nbsp;  </p></b>
+                 <a href="{{ product.get_absolute_url }}">
+                  <img style="width:100px;height:80px;" src="{% if product.image %}{{ product.image.url }}
+                  {% else %}{% static "img/no_image.png" %}{% endif %}">
+                </a>
+                
+                <div class="flex">
+            
+                  <form class="flex-child" action="{% url "cart:cart_remove" product.id %}" method="post">
+                    <button class="button button1" type="submit"  >
+                      <i class="fa fa-trash" >&nbsp;&nbsp; REMOVE</i>
+                      </button>
+                    {% csrf_token %}
+                  </form>
+                  
+                  <form  class="flex-child" action="{% url "cart:cart_add" product.id %}" method="post">
+                    {{ item.update_quantity_form.quantity }}
+                    {{ item.update_quantity_form.override }}
+                    <input type="submit" value="UPDATE">
+                    {% csrf_token %}
+                  </form>
+               
+                </div>
+                  {% endwith %}
+
+                  {% empty %}
+                  <p>
+                    Your cart is empty.
+                    <a href="{% url 'shop:product_list' %}" class="btn btn-primary">Continue shopping</a>
+                  </p>
+                  {% endfor %}
+                  
+                  </div>
+              </div>
+          </div>
+      </div>
+      {% block sidebar %} {% include 'cart/cart_summary_sidebar.html' %} {% endblock sidebar %}
+    </div>
+  </div>
+
+      <br>
+      {% include "shop/product/recommended.html" %}
+      <br>
+      {%include "shop/product/recently_viewed.html" %}
 
 {% endblock %}

@@ -1,0 +1,34 @@
+{% block sidebar %}
+{% load static %}
+
+<style>
+        .card{
+            box-shadow: 0 16px 48px #b3b4b6;
+        }
+       
+</style>
+
+
+<div class="col-md-4 float-right ">
+    <div class="card my-4">
+        <h5 class="card-header">CART SUMMARY</h5>
+    <div class="card-body">
+       <p class="card-text">
+        <p>Subtotal: KSH {{ cart.get_total_price }}</p>
+        <hr>
+        {% if cart.get_total_price > 0 %}
+          <p align="center">
+          <a href="{% url 'orders:delivery_method' %}" class="btn btn-primary">CHECKOUT(KSH{{ cart.get_total_price }})</a>
+          </p>
+          {% else %}
+          <a href="{% url 'shop:product_list' %}" class="btn btn-primary">Continue shopping</a>
+          {% endif %}
+
+    </div>
+</div>
+</div>
+
+
+
+  
+  {% endblock sidebar %}
