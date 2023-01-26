@@ -4,8 +4,9 @@ from xhtml2pdf import pisa
 from django.views.generic import CreateView,DetailView,ListView,FormView,TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy 
-from django.http import HttpResponse
+from django.http import HttpResponse,Http404
 from django.template.loader import get_template
+
 
 from cart.cart import Cart
 from users.models import Address,PickupStation
@@ -108,3 +109,39 @@ class OrderListView(LoginRequiredMixin,ListView):
 
     def get_queryset(self):
         return Order.objects.filter(user=self.request.user)
+    
+    
+class OrderDetailView(LoginRequiredMixin,DetailView):
+    model= Order
+    template_name= 'orders/detail.html'
+    context_object_name= 'order'
+    
+    
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset=queryset)
+        if obj.user != self.request.user:
+            raise Http404("Order not found or not accessible.")
+        return obj
+
+ 
+#a view to show list of orders a user has cancelled.   
+class CancelledOrderListView(LoginRequiredMixin,ListView):
+    model= Order
+    template_name='orders/cancelled_list.html'
+
+    
+    def get_queryset(self):
+        return Order.objects.filter(order_status='cancelled',user=self.request.user)
+    
+    
+    
+class CancelledOrderDetailView(LoginRequiredMixin,DetailView):
+    model= Order
+    template_name='orders/cancelled_detail.html'
+    
+    
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset=queryset)
+        if obj.order_status != 'cancelled' or obj.user != self.request.user:
+            raise Http404("Order not found or not accessible.")
+        return obj
