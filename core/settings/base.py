@@ -205,10 +205,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CRISPY_TEMPLATE_PACK = 'uni_form'
 
 #mpesa credentials
-MPESA_CONSUMER_KEY = 'JfgzduzMJEGJVCVaGqy1UmRphPKpHqQR'
+MPESA_CONSUMER_KEY = 'SCAG2diyzUjZWoFAwRy8sav57DUN6MlA'
 #MPESA_CONSUMER_KEY = env('MPESA_CONSUMER_KEY')
 #MPESA_CONSUMER_SECRET = env('MPESA_CONSUMER_SECRET')
-MPESA_CONSUMER_SECRET = 'atmBygXnWgNweouT'
+MPESA_CONSUMER_SECRET = 'n4s2qi2S8ZCGX4va'
 MPESA_API_URL = 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials'
 
 
@@ -227,3 +227,13 @@ CELERY_RESULT_BACKEND = "redis://localhost:6379"
 #stripe settings
 STRIPE_PUBLISHABLE_KEY=env('STRIPE_PUBLISHABLE_KEY')
 STRIPE_SECRET_KEY =env('STRIPE_SECRET_KEY')
+
+
+#Starlight Lyrics
+'''
+
+    Star light, star bright,
+    First star I see tonight;
+    I wish I may, I wish I might
+    Have the wish I wish tonight.
+'''
