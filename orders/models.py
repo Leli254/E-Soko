@@ -164,15 +164,7 @@ class Order(models.Model):
         return shipping_cost
 
 
-    '''
-    def get_total_cost(self):
-        total_cost = sum(item.get_cost() for item in self.items.all())
-        if self.coupon:
-            total_cost=total_cost-self.coupon.value
-        return total_cost
-    '''
-
-    #above method  plus shipping cost
+    
     def get_total_cost(self):
         total_cost = sum(item.get_cost() for item in self.items.all())
         if self.coupon:
