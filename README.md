@@ -1,2 +1,0 @@
-# core
-initial commit
