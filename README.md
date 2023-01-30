@@ -30,7 +30,7 @@ Soko is a Swahili word for market. This repo is a E-Commerce web app built using
 <h4>How to run the app</h4>
 <ul>
 <li>Clone the repo</li>
-
+git clone https://github.com/Leli254/E-Soko.git
 <li>Install the requirements</li>
 <li>Run the app</li>
 </ul>
