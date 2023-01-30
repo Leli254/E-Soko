@@ -1,7 +1,7 @@
 # E-Soko
 Soko is a Swahili word for market. This repo is a E-Commerce web app built using Django 
 
-<h4>Features of the app</h4>
+# Features of the app
 <ul>
 <li>Users can register and login</li>
 <li>Users can view products</li>
@@ -45,4 +45,5 @@ git clone https://github.com/Leli254/E-Soko.git
 <li>Create a pull request</li>
 </ul>
 
-
+<h4>Authors</h4>
+<ul>Leli Michael</ul>
