@@ -1,13 +1,12 @@
 Soko is a Swahili word for market. This repo is a E-Commerce web app built using Django 
 
 
-Features
+<h2>Features </h2>
 
     Listing of products by vendors
     Purchasing of products by buyers
     Secure payment options
     Real-time updates on available products
-    
     
 <h3> Getting Started</h3>
 
