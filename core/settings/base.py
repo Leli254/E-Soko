@@ -205,10 +205,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CRISPY_TEMPLATE_PACK = 'uni_form'
 
 #mpesa credentials
-MPESA_CONSUMER_KEY = 'SCAG2diyzUjZWoFAwRy8sav57DUN6MlA'
-#MPESA_CONSUMER_KEY = env('MPESA_CONSUMER_KEY')
-#MPESA_CONSUMER_SECRET = env('MPESA_CONSUMER_SECRET')
-MPESA_CONSUMER_SECRET = 'n4s2qi2S8ZCGX4va'
+
+MPESA_CONSUMER_KEY = env('MPESA_CONSUMER_KEY')
+MPESA_CONSUMER_SECRET = env('MPESA_CONSUMER_SECRET')
 MPESA_API_URL = 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials'
 
 
