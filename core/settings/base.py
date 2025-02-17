@@ -23,7 +23,7 @@ SECRET_KEY = env('SECRET_KEY')
 DEBUG = True
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.ngrok.io']
-CSRF_TRUSTED_ORIGINS=['https://8597-102-222-146-36.in.ngrok.io']
+CSRF_TRUSTED_ORIGINS = ['https://8597-102-222-146-36.in.ngrok.io']
 
 
 # Application definition
@@ -46,7 +46,7 @@ DJANGO_APPS = [
     'django.contrib.staticfiles',
 ]
 
-THIRD_PARTY_APPS=[
+THIRD_PARTY_APPS = [
     #allauth apps
     'allauth',
     'allauth.account',
@@ -59,7 +59,7 @@ THIRD_PARTY_APPS=[
 
 INSTALLED_APPS = USER_DEFINED_APPS + DJANGO_APPS + THIRD_PARTY_APPS
 
-AUTH_USER_MODEL='users.User'
+AUTH_USER_MODEL = 'users.User'
 
 
 AUTHENTICATION_BACKENDS = [
@@ -82,21 +82,17 @@ SOCIALACCOUNT_PROVIDERS = {
 
 SITE_ID = 1
 
-ACCOUNT_UNIQUE_EMAIL =True
-ACCOUNT_EMAIL_REQUIRED =True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_VERIFICATION = "none"
 ACCOUNT_SIGNUP_REDIRECT_URL = "/users/address/create"
 
-
-
 ACCOUNT_FORMS = { 
-'signup': 'users.forms.CustomSignupForm', 
+    'signup': 'users.forms.CustomSignupForm',
 }
-
-
 
 
 MIDDLEWARE = [
@@ -190,8 +186,8 @@ STATIC_URL = '/static/'
 
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, '/static') 
-STATICFILES_DIRS = os.path.join(BASE_DIR , "static",),
+STATIC_ROOT = os.path.join(BASE_DIR, '/static')
+STATICFILES_DIRS = os.path.join(BASE_DIR, "static",),
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -204,18 +200,18 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CRISPY_TEMPLATE_PACK = 'uni_form'
 
-#mpesa credentials
-
+# Mpesa credentials
 MPESA_CONSUMER_KEY = env('MPESA_CONSUMER_KEY')
 MPESA_CONSUMER_SECRET = env('MPESA_CONSUMER_SECRET')
-MPESA_API_URL = 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials'
+MPESA_API_URL = (
+    'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials'
+    )
 
-
-#cart settings
+# Cart settings
 CART_SESSION_ID = 'cart'
 
 
-#Email settings
+# Email settings
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 
@@ -223,12 +219,11 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 CELERY_BROKER_URL = "redis://localhost:6379"
 CELERY_RESULT_BACKEND = "redis://localhost:6379"
 
-#stripe settings
-STRIPE_PUBLISHABLE_KEY=env('STRIPE_PUBLISHABLE_KEY')
-STRIPE_SECRET_KEY =env('STRIPE_SECRET_KEY')
+# stripe settings
+STRIPE_PUBLISHABLE_KEY = env('STRIPE_PUBLISHABLE_KEY')
+STRIPE_SECRET_KEY = env('STRIPE_SECRET_KEY')
 
-
-#Starlight Lyrics
+# Starlight Lyrics
 '''
 
     Star light, star bright,

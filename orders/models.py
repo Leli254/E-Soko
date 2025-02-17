@@ -1,30 +1,27 @@
-from decimal import Decimal
 import uuid
 
 from django.db import models
 from django.utils.crypto import get_random_string
 from django.utils.translation import gettext_lazy as _
-from django.core.validators import MinValueValidator,MaxValueValidator
 from django.conf import settings
 from django.urls import reverse
-from datetime import timedelta,timezone,datetime,date
+from datetime import timedelta, date
 
-
-from shop.models import Product,Coupon
-from users.models import Address,PickupStation
-
-
+from shop.models import Product, Coupon
+from users.models import Address, PickupStation
 
 
 class ShippingCompany(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(max_length=100)
     description = models.TextField(blank=True)
-    phone_number=models.CharField(max_length=15, blank=True, null=True)
-    email=models.EmailField(blank=True, null=True)
-    location=models.CharField(max_length=100,default='Nairobi')
+    phone_number = models.CharField(max_length=15, blank=True, null=True)
+    email = models.EmailField(blank=True, null=True)
+    location = models.CharField(max_length=100, default='Nairobi')
     image = models.ImageField(upload_to='shipping_companies/', blank=True)
-    uuid_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    uuid_id = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False
+        )
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -40,11 +37,10 @@ class ShippingCompany(models.Model):
         return reverse('orders:shipping_company_details', args=[self.slug])
 
 
-
 class Order(models.Model):
     """Order model."""
 
-    ORDER_STATUS =(
+    ORDER_STATUS = (
         ('pending', _('Pending')),
         ('waiting_fulfillment', _('Waiting Fulfillment')),
         ('processing', _('Processing')),
@@ -61,17 +57,22 @@ class Order(models.Model):
         ('bank_transfer', _('Bank Transfer')),
         )
 
-    
-    user=models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='orders', 
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        related_name='orders',
         null=True, blank=True)
     address = models.ForeignKey(
         Address, on_delete=models.CASCADE, null=True, blank=True)
     pickup_station = models.ForeignKey(
         PickupStation, on_delete=models.CASCADE, null=True, blank=True)
-    order_number = models.CharField(max_length=9, blank=True, null=True, unique=True)
-    coupon=models.ForeignKey(Coupon, on_delete=models.SET_NULL, null=True, blank=True)
-    order_status=models.CharField(
+    order_number = models.CharField(
+        max_length=9, blank=True,
+        null=True, unique=True
+        )
+    coupon = models.ForeignKey(
+        Coupon, on_delete=models.SET_NULL, null=True, blank=True)
+    order_status = models.CharField(
         max_length=50, choices=ORDER_STATUS, default='pending')
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -79,8 +80,10 @@ class Order(models.Model):
     payment_method = models.CharField(
         max_length=50, choices=PAYMENT_METHOD, default='mpesa_on_deliverly')
     returnable = models.BooleanField(default=True)
-    delivered_by=models.ForeignKey(
-        ShippingCompany,related_name='orders',null=True,blank=True,on_delete=models.SET_NULL)
+    delivered_by = models.ForeignKey(
+        ShippingCompany, related_name='orders',
+        null=True, blank=True, on_delete=models.SET_NULL
+        )
 
     class Meta:
         ordering = ['-created']
@@ -89,8 +92,7 @@ class Order(models.Model):
         ]
 
     def __str__(self):
-        return f'Order {self.id}'
-    
+        return f'Order {self.order_number}'
 
     def save(self, *args, **kwargs):
         if not self.order_number:
@@ -98,16 +100,16 @@ class Order(models.Model):
                 length=9, allowed_chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')
         super().save(*args, **kwargs)
 
-
     def get_absolute_url(self):
-        return reverse('orders:order_detail', kwargs={'order_number': self.order_number})
+        return reverse(
+            'orders:order_detail',
+            kwargs={'order_number': self.order_number}
+            )
 
-
-    #method to apply coupon
-    def apply_coupon(self,coupon):
-        self.coupon=coupon
+    # method to apply coupon
+    def apply_coupon(self, coupon):
+        self.coupon = coupon
         self.save()
-
 
     def shipping_cost(self):
         shipping_cost=0
@@ -164,13 +166,12 @@ class Order(models.Model):
         return shipping_cost
 
 
-    
     def get_total_cost(self):
         total_cost = sum(item.get_cost() for item in self.items.all())
         if self.coupon:
-            total_cost=total_cost+self.shipping_cost()-self.coupon.value
+            total_cost = total_cost+self.shipping_cost()-self.coupon.value
         return total_cost
-    
+
     def get_order_items(self):
         return self.items.all()
 
@@ -180,36 +181,34 @@ class Order(models.Model):
     flip the returnable field to false
     '''
     def check_returnable(self):
-        if self.order_status=='delivered':
+        if self.order_status == 'delivered':
             if self.updated.date() + timedelta(days=15) < date.today():
-                self.returnable=False
+                self.returnable = False
                 self.save()
         return self.returnable
 
-    #a method to show the returnable deadline date
+    # A method to show the returnable deadline date
     def get_returnable_deadline(self):
-        if self.order_status=='delivered':
+        if self.order_status == 'delivered':
             return self.updated.date() + timedelta(days=15)
         return None
 
-    #a method to check  deliverly method.if via pickup station or address
-    #IF pickup station return via pickup station,if address return via Door Delivery
+    # a method to check  deliverly method.if via pickup station or address
+    # IF pickup station return via pickup station,if address return via Door Delivery
     def delivery_method(self):
         if self.pickup_station:
             return 'Pickup Station'
         elif self.pickup_station is None:
             return 'Door Delivery'
-        return  'Door Delivery'
+        return 'Door Delivery'
 
-
-    #method to check shipping company,if None return Esoko Express Delivery
+    # method to check shipping company,if None return Esoko Express Delivery
     def shipping_company(self):
         if self.delivered_by:
             return self.delivered_by.name
         return 'Esoko Express Delivery'
-    
-   
-  
+
+
 class OrderItem(models.Model):
     order = models.ForeignKey(Order,
                               related_name='items',
@@ -222,7 +221,7 @@ class OrderItem(models.Model):
     quantity = models.PositiveIntegerField(default=1)
 
     def __str__(self):
-        return str(self.id)
+        return str(self.order.order_number)
 
     def get_cost(self):
         return self.price * self.quantity
